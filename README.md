@@ -1,1 +1,5 @@
-# PO_2025_PT1315_Fabisiak_Bednarczyk
+# Darwin World
+
+## Wariant: Szybkie zwierzaki
+
+Autorzy: Mateusz Fabisiak, Maciej Bednarczyk
