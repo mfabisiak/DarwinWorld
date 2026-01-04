@@ -1,0 +1,7 @@
+package io.github.mfabisiak.darwinworld
+
+interface Platform {
+    val name: String
+}
+
+expect fun getPlatform(): Platform
