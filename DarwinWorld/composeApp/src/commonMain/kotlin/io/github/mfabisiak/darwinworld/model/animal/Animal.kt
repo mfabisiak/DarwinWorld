@@ -1,4 +1,8 @@
-package io.github.mfabisiak.darwinworld.model
+package io.github.mfabisiak.darwinworld.model.animal
+
+import io.github.mfabisiak.darwinworld.model.Direction
+import io.github.mfabisiak.darwinworld.model.animal.Genotype
+import io.github.mfabisiak.darwinworld.model.Position
 
 class Animal(var position: Position, initialEnergy: Int, val genotype: Genotype, var direction: Direction){
       val descendants = mutableSetOf<Animal>()
@@ -9,7 +13,7 @@ class Animal(var position: Position, initialEnergy: Int, val genotype: Genotype,
 
     constructor(parent1: Animal, parent2: Animal) : this(
         position=parent1.position,
-        genotype = Genotype.randomOfParents(parent1, parent2),
+        genotype = Genotype.Companion.randomOfParents(parent1, parent2),
         initialEnergy = calculateEnergy(parent1, parent2),
         direction = Direction.entries.random()
 
@@ -20,4 +24,3 @@ class Animal(var position: Position, initialEnergy: Int, val genotype: Genotype,
     }
 
 }
-
