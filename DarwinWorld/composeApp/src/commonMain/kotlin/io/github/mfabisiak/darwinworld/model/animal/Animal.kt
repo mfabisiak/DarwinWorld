@@ -32,8 +32,8 @@ class Animal(
         with(config) {
             if (!canBreed(parent1) || !canBreed(parent2)) return null
 
-            val child = animalOfParents(parent2, parent2)
-            parent2.energy -= energyGivenToNewborn
+            val child = animalOfParents(parent1, parent2)
+            parent1.energy -= energyGivenToNewborn
             parent2.energy -= energyGivenToNewborn
 
             return child
