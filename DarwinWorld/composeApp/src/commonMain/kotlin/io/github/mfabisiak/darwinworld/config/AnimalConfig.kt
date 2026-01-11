@@ -1,4 +1,4 @@
-package io.github.mfabisiak.darwinworld.utils
+package io.github.mfabisiak.darwinworld.config
 
 import io.github.mfabisiak.darwinworld.model.animal.Animal
 
