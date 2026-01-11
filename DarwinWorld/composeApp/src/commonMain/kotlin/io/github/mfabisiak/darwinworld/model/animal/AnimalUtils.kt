@@ -9,10 +9,10 @@ fun AnimalConfig.genotypeOfParents(parent1: Animal, parent2: Animal): Genotype {
 
     val (leftParent, rightParent) = setOf(parent1, parent2).shuffled()
 
-    val divisionIndex = leftParent.energy / (leftParent.energy + rightParent.energy)
+    val divisionIndex = genotypeSize * leftParent.energy / (leftParent.energy + rightParent.energy)
 
-    val mutatingGenes = GENE_RANGE.shuffled()
-        .take(Random.nextInt(minNumberOfMutations, maxNumberOfMutations - 1))
+    val mutatingGenes = (0..<genotypeSize).shuffled()
+        .take(Random.nextInt(minNumberOfMutations, maxNumberOfMutations + 1))
 
     val genesList = listOf(
         leftParent.genotype.genes.take(divisionIndex),
@@ -29,6 +29,6 @@ fun AnimalConfig.animalOfParents(parent1: Animal, parent2: Animal) = Animal(
     config = this,
     position = parent1.position,
     genotype = genotypeOfParents(parent1, parent2),
-    initialEnergy = energyRequiredToBreed,
+    initialEnergy = 2 * energyGivenToNewborn,
     direction = Direction.random()
 )
