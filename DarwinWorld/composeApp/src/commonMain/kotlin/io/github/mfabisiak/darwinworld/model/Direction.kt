@@ -12,6 +12,10 @@ enum class Direction {
     WEST,
     NORTH_WEST;
 
+    companion object {
+        fun random() = Direction.entries.random()
+    }
+
 
     operator fun plus(other: Int) = directionsList[this.ordinal + other]
 
