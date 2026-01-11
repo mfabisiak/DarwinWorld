@@ -1,5 +1,7 @@
 package io.github.mfabisiak.darwinworld.model
 
+import io.github.mfabisiak.darwinworld.utils.CircularList
+
 enum class Direction {
     NORTH,
     NORTH_EAST,
@@ -11,9 +13,9 @@ enum class Direction {
     NORTH_WEST;
 
 
-    operator fun plus(other: Int) = Direction.entries[(this.ordinal + other).mod(numberOfDirections)]
+    operator fun plus(other: Int) = directionsList[this.ordinal + other]
 
-    operator fun minus(other:Int) = Direction.entries[(this.ordinal + other).mod(numberOfDirections)]
+    operator fun minus(other:Int) = directionsList[this.ordinal - other]
 }
 
-private val numberOfDirections = Direction.entries.size
+private val directionsList = CircularList(Direction.entries)
