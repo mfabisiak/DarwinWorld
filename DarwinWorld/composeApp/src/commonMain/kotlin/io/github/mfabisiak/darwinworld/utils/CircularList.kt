@@ -4,6 +4,10 @@ import kotlin.random.Random
 
 class CircularList<E>(val actualList: List<E>) : List<E> by actualList {
 
+    init {
+        if (actualList.isEmpty()) throw IllegalArgumentException("CircularList cannot be empty.")
+    }
+
     override operator fun get(index: Int) = actualList[index.mod(size)]
 
     fun infiniteIteratorFrom(startingIndex: Int) = iterator {
