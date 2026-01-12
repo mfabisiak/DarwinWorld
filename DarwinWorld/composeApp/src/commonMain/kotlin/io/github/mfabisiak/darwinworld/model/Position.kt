@@ -11,6 +11,8 @@ data class Position(val x: Int, val y: Int) {
 
     infix fun follows(other: Position): Boolean = this.x >= other.x && this.y >= other.y
 
+    operator fun rangeTo(other: Position) = PositionClosedRange(this, other)
+
 }
 
 fun Direction.movement(): Position = when(this) {
@@ -25,3 +27,29 @@ fun Direction.movement(): Position = when(this) {
     }
 
 
+class PositionClosedRange(val start: Position, val end: Position) : Iterable<Position> {
+    override fun iterator(): Iterator<Position> = Vector2dIterator(start, end)
+
+    operator fun contains(position: Position) = position follows start && position precedes end
+
+    private class Vector2dIterator(val start: Position, val end: Position) : Iterator<Position> {
+        private var current = start
+
+        override fun hasNext(): Boolean = current precedes end
+
+        override fun next(): Position {
+            if (!hasNext()) throw NoSuchElementException()
+
+            val previous = current
+
+            current = if (current.x < end.x) {
+                Position(current.x + 1, current.y)
+            } else {
+                Position(start.x, current.y + 1)
+            }
+
+            return previous
+        }
+    }
+
+}
