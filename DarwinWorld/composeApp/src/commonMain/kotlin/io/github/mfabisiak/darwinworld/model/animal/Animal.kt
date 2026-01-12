@@ -18,8 +18,19 @@ class Animal(
 
     var energy: Int = initialEnergy
         private set
+
     val isAlive
         get() = energy > 0
+
+    var age = 0
+        private set
+
+    fun endDay() {
+        with(config) {
+            age += 1
+            energy -= energyConsumedEachDay
+        }
+    }
 
 
     fun rotate(){
