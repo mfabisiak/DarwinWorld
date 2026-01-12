@@ -10,7 +10,6 @@ interface AnimalConfig {
     val maxNumberOfMutations: Int
     val genotypeSize: Int
 
-    fun Animal.canBreed(animal: Animal) = animal.energy >= energyRequiredToBreed && TODO()
-
+    fun Animal.canBreed(animal: Animal) = animal.energy >= energyRequiredToBreed
 
 }
