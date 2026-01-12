@@ -15,7 +15,7 @@ class CircularList<E>(val actualList: List<E>) : List<E> by actualList {
         }
     }
 
-    public fun randomStartingInfiniteIterator() = infiniteIteratorFrom(Random.nextInt(size))
+    fun randomStartingInfiniteIterator() = infiniteIteratorFrom(Random.nextInt(size))
 
     fun infiniteIterator() = infiniteIteratorFrom(0)
 
