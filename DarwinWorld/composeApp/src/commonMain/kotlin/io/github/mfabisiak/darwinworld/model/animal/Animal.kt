@@ -11,6 +11,14 @@ class Animal(
     val genotype: Genotype,
     var direction: Direction
 ) {
+
+    init {
+        if (genotype.genes.size != config.genotypeSize) throw IllegalArgumentException(
+            "Animal initialized with " +
+                    "genotype of different size than specified in config."
+        )
+    }
+
     private val _children = mutableSetOf<Animal>()
 
     val children
@@ -33,9 +41,9 @@ class Animal(
     }
 
 
-    fun rotate(){
+    fun rotate() {
         val actualRotate = genotype.nextGene()
-        direction+=actualRotate
+        direction += actualRotate
     }
 
     fun breed(parent2: Animal): Animal? {
