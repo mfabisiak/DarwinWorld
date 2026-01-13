@@ -38,7 +38,10 @@ fun Animal.breed(parent2: Animal): Animal {
                 direction = Direction.random()
             )
         else
-            throw IllegalStateException("Attempted to breed animal of ID ${"placeholder"}, but it is unable to do so")
+            throw IllegalStateException(
+                "Attempted to breed animals of IDs ${parent1.id} and ${parent2.id}, " +
+                        "but at least one of them was unable to do so"
+            )
     }
 }
 
@@ -54,6 +57,6 @@ fun Animal.rotate(): Animal {
 
 fun Animal.afterBreeding(): Animal {
     if (!this.canBreed())
-        throw IllegalStateException("Attempted to breed animal of ID ${"placeholder"}, but it is unable to do so")
+        throw IllegalStateException("Attempted to breed animal of ID $id, but it is unable to do so")
     return this.copy(energy = energy - config.energyGivenToNewborn)
 }
