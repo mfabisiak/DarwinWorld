@@ -16,7 +16,8 @@ typealias Plants = PersistentSet<Position>
 data class WorldMap(
     val config: MapConfig,
     val animals: Animals = persistentMapOf(),
-    val plants: Plants = persistentSetOf()
+    val plants: Plants = persistentSetOf(),
+    val animalsDict: PersistentMap<String, Animal> = persistentMapOf()
 ) {
 
     fun addPlant(position: Position) = this.copy(plants = plants.add(position))
@@ -35,28 +36,33 @@ data class WorldMap(
         }
 
         val newEnergy = animal.energy + config.energyFromSinglePlant
+        val newAnimal = animal.copy(energy = newEnergy)
 
         val newPlants = plants.remove(position)
-        val newAnimals = animals.update(animal, animal.copy(energy = newEnergy))
+        val newAnimals = animals.update(animal, newAnimal)
+        val newAnimalsDict = animalsDict.put(newAnimal.id, newAnimal)
 
-        return this.copy(plants = newPlants, animals = newAnimals)
+
+        return this.copy(plants = newPlants, animals = newAnimals, animalsDict = newAnimalsDict)
     }
 
     fun moveAnimal(animal: Animal): WorldMap {
         val newAnimal: Animal = animal.copy(position = animal.position + animal.direction.movement())
 
         val newAnimals = animals.update(animal, newAnimal)
+        val newAnimalsDict = animalsDict.put(animal.id, newAnimal)
 
-        return this.copy(animals = newAnimals)
+        return this.copy(animals = newAnimals, animalsDict = newAnimalsDict)
     }
 
     fun addAnimal(animal: Animal): WorldMap {
         val animalsAtPosition = (animals[animal.position] ?: persistentSetOf())
             .add(animal)
 
+        val newAnimalsDict = animalsDict.put(animal.id, animal)
         val newAnimals = animals.put(animal.position, animalsAtPosition)
 
-        return this.copy(animals = newAnimals)
+        return this.copy(animals = newAnimals, animalsDict = newAnimalsDict)
     }
 
 
