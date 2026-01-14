@@ -1,7 +1,6 @@
 package io.github.mfabisiak.darwinworld.model.animal
 
 import io.github.mfabisiak.darwinworld.config.AnimalConfig
-import io.github.mfabisiak.darwinworld.model.Direction
 import kotlin.random.Random
 
 
@@ -24,6 +23,9 @@ fun AnimalConfig.genotypeOfParents(parent1: Animal, parent2: Animal): Genotype {
     return Genotype(genesList)
 }
 
+fun AnimalConfig.randomGenotype() = Genotype(generateSequence { GENE_RANGE.random() }
+    .take(genotypeSize).toList())
+
 fun Animal.canBreed() = this.energy >= config.energyRequiredToBreed
 
 fun Animal.breed(parent2: Animal): Animal {
@@ -34,8 +36,7 @@ fun Animal.breed(parent2: Animal): Animal {
                 config = this,
                 position = parent1.position,
                 genotype = genotypeOfParents(parent1, parent2),
-                energy = 2 * energyGivenToNewborn,
-                direction = Direction.random()
+                energy = 2 * energyGivenToNewborn
             )
         else
             throw IllegalStateException(
