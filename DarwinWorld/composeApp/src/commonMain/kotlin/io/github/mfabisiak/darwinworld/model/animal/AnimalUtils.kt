@@ -51,7 +51,7 @@ fun Animal.afterDay() = this.copy(
 )
 
 fun Animal.rotate(): Animal {
-    val rotation = genotype.nextGene()
+    val rotation = genotype[age]
     return this.copy(direction = direction + rotation)
 }
 

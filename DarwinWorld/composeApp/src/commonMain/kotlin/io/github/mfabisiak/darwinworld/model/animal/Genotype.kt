@@ -1,6 +1,7 @@
 package io.github.mfabisiak.darwinworld.model.animal
 
 import io.github.mfabisiak.darwinworld.utils.CircularList
+import kotlin.random.Random
 
 val GENE_RANGE = 0..7
 
@@ -8,9 +9,9 @@ class Genotype(genesList: List<Int>) {
 
     val genes = CircularList(genesList)
 
-    private val genesIterator = genes.randomStartingInfiniteIterator()
+    private val firstDayGene = Random.nextInt(genes.size)
 
-    fun nextGene() = genesIterator.next()
+    operator fun get(day: Int) = genes[firstDayGene + day]
 }
 
 
