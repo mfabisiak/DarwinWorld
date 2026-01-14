@@ -3,82 +3,104 @@ package io.github.mfabisiak.darwinworld.model.map
 import io.github.mfabisiak.darwinworld.config.MapConfig
 import io.github.mfabisiak.darwinworld.model.Position
 import io.github.mfabisiak.darwinworld.model.animal.Animal
+import io.github.mfabisiak.darwinworld.model.movement
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.persistentSetOf
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 
-class WorldMap(val config: MapConfig) {
 
-    private val _mapState = MutableStateFlow(MapState())
+typealias Animals = PersistentMap<Position, PersistentSet<Animal>>
+typealias Plants = PersistentSet<Position>
 
-    val mapState = _mapState.asStateFlow()
+data class WorldMap(
+    val config: MapConfig,
+    val animals: Animals = persistentMapOf(),
+    val plants: Plants = persistentSetOf()
+) {
 
-    fun addPlant(position: Position) {
-        _mapState.update { currentState ->
-            val newPlants = currentState.plants.add(position)
-            currentState.copy(plants = newPlants)
+    fun addPlant(position: Position) = this.copy(plants = plants.add(position))
+
+    fun eatPlant(position: Position): WorldMap {
+        if (position !in plants || position !in animals.keys) return this
+
+        val animal = animals[position]!!
+            .shuffled()
+            .maxWithOrNull(compareBy<Animal> { it.energy }
+                .thenBy { it.age }
+                .thenBy { it.childrenIds.size })
+
+        if (animal == null) {
+            return this.copy(animals = animals.remove(position))
         }
+
+        val newEnergy = animal.energy + config.energyFromSinglePlant
+
+        val newPlants = plants.remove(position)
+        val newAnimals = animals.update(animal, animal.copy(energy = newEnergy))
+
+        return this.copy(plants = newPlants, animals = newAnimals)
     }
 
-    private fun removePlant(position: Position, oldPlants: PersistentSet<Position>) =
-        oldPlants.remove(position)
+    fun moveAnimal(animal: Animal): WorldMap {
+        val newAnimal: Animal = animal.copy(position = animal.position + animal.direction.movement())
 
-    private fun Animal.update(
-        newAnimal: Animal,
-        oldAnimals: PersistentMap<Position, PersistentSet<Animal>>
-    ): PersistentMap<Position, PersistentSet<Animal>> {
-        val newAnimalsAtOldPosition = oldAnimals[this.position]?.remove(this)
-        val newAnimalsAtNewPosition = oldAnimals[newAnimal.position]?.add(newAnimal) ?: persistentSetOf(newAnimal)
+        val newAnimals = animals.update(animal, newAnimal)
 
-        if (newAnimalsAtOldPosition == null)
-            return oldAnimals
+        return this.copy(animals = newAnimals)
+    }
 
-        val newAnimals = if (newAnimalsAtOldPosition.isNotEmpty()) {
-            oldAnimals
-                .put(this.position, newAnimalsAtOldPosition)
-                .put(newAnimal.position, newAnimalsAtNewPosition)
-        } else {
-            oldAnimals
-                .remove(this.position)
-                .put(newAnimal.position, newAnimalsAtNewPosition)
-        }
+    fun addAnimal(animal: Animal): WorldMap {
+        val animalsAtPosition = (animals[animal.position] ?: persistentSetOf())
+            .add(animal)
 
-        return newAnimals
+        val newAnimals = animals.put(animal.position, animalsAtPosition)
+
+        return this.copy(animals = newAnimals)
     }
 
 
-    fun Animal.eatPlant() {
-        _mapState.update { currentState: MapState ->
-            if (this.position !in currentState.plants) return@update currentState
+    fun removeDead(): WorldMap {
+        val newAnimals = animals.values
+            .flatten()
+            .filter { !it.isAlive }
+            .fold(animals) { animals, animal -> animals.removeAnimal(animal) }
 
-            val oldPlants = currentState.plants
-            val oldAnimals = currentState.animals
-            val newEnergy = this.energy + this@WorldMap.config.energyFromSinglePlant
-
-            val newPlants = removePlant(this.position, oldPlants)
-            val newAnimals = this.update(this.copy(energy = newEnergy), oldAnimals)
-
-            currentState.copy(plants = newPlants, animals = newAnimals)
-        }
-    }
-
-    fun Animal.move(vector: Position) {
-        _mapState.update { currentState: MapState ->
-            val oldAnimals = currentState.animals
-            val newAnimal = this.copy(position = this.position + vector)
-            val newAnimals = this.update(newAnimal, oldAnimals)
-
-            currentState.copy(animals = newAnimals)
-        }
+        return this.copy(animals = newAnimals)
     }
 
 }
 
-data class MapState(
-    val plants: PersistentSet<Position> = persistentSetOf(),
-    val animals: PersistentMap<Position, PersistentSet<Animal>> = persistentMapOf()
-)
+private fun Animals.removeAnimal(animal: Animal): Animals {
+    val animalsAtPosition = (this[animal.position]
+        ?: throw IllegalStateException("Attempted to remove non existing animal: $animal."))
+        .remove(animal)
+
+    val newAnimals = if (animalsAtPosition.isEmpty()) {
+        this.remove(animal.position)
+    } else {
+        this.put(animal.position, animalsAtPosition)
+    }
+
+    return newAnimals
+}
+
+private fun Animals.update(oldAnimal: Animal, newAnimal: Animal): Animals {
+    val newAnimalsAtOldPosition = this[oldAnimal.position]?.remove(oldAnimal)
+        ?: throw IllegalStateException("Attempted to update non existing animal: $this.")
+
+    val newAnimalsAtNewPosition = this[newAnimal.position]?.add(newAnimal) ?: persistentSetOf(newAnimal)
+
+
+    val newAnimals = if (newAnimalsAtOldPosition.isNotEmpty()) {
+        this
+            .put(oldAnimal.position, newAnimalsAtOldPosition)
+            .put(newAnimal.position, newAnimalsAtNewPosition)
+    } else {
+        this
+            .remove(oldAnimal.position)
+            .put(newAnimal.position, newAnimalsAtNewPosition)
+    }
+
+    return newAnimals
+}
