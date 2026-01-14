@@ -9,4 +9,9 @@ interface MapConfig {
     val energyFromSinglePlant: Int
 
     val jungle: PositionClosedRange
+
+    fun randomPlantPosition(): Position
+
+    val boundary: PositionClosedRange
+        get() = lowerBound..upperBound
 }

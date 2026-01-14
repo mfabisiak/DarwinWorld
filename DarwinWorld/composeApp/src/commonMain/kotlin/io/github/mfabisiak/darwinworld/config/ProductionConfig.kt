@@ -1,6 +1,7 @@
 package io.github.mfabisiak.darwinworld.config
 
 import io.github.mfabisiak.darwinworld.model.Position
+import kotlin.random.Random
 
 class ProductionConfig(
     override val numberOfPlants: Int,
@@ -14,7 +15,8 @@ class ProductionConfig(
     override val genotypeSize: Int,
     override val lowerBound: Position,
     override val upperBound: Position,
-    override val energyFromSinglePlant: Int
+    override val energyFromSinglePlant: Int,
+    override val initialEnergy: Int
 ) : SimulationConfig {
 
     override val jungle = let {
@@ -24,5 +26,14 @@ class ProductionConfig(
         val jungleUpperBound = Position(upperBound.x, jungleLowerBound.y + jungleHeight)
 
         jungleLowerBound..jungleUpperBound
+    }
+
+    override fun randomPlantPosition(): Position {
+        val inJungle = Random.nextBoolean()
+
+        if (inJungle)
+            return jungle.toSet().random()
+
+        return (boundary.toSet() - jungle.toSet()).random()
     }
 }
