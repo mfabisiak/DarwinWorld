@@ -5,4 +5,6 @@ import io.github.mfabisiak.darwinworld.model.Position
 interface MapConfig {
     val lowerBound: Position
     val upperBound: Position
+    val energyFromSinglePlant: Int
+
 }
