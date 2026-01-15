@@ -28,12 +28,12 @@ class ProductionConfig(
         jungleLowerBound..jungleUpperBound
     }
 
-    override fun randomPlantPosition(): Position {
+    override fun randomPlantPosition(takenPositions: Set<Position>): Position {
         val inJungle = Random.nextBoolean()
 
         if (inJungle)
-            return jungle.toSet().random()
+            return (jungle.toSet() - takenPositions).random()
 
-        return (boundary.toSet() - jungle.toSet()).random()
+        return (boundary.toSet() - jungle.toSet() - takenPositions).random()
     }
 }

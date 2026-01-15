@@ -10,7 +10,7 @@ interface MapConfig {
 
     val jungle: PositionClosedRange
 
-    fun randomPlantPosition(): Position
+    fun randomPlantPosition(takenPositions: Set<Position>): Position
 
     val boundary: PositionClosedRange
         get() = lowerBound..upperBound
