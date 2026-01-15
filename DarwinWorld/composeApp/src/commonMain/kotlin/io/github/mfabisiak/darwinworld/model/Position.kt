@@ -34,6 +34,8 @@ class PositionClosedRange(val start: Position, val end: Position) : Iterable<Pos
 
     fun random() = this.toSet().random()
 
+    fun random(n: Int) = this.toSet().shuffled().take(n)
+
     private class Vector2dIterator(val start: Position, val end: Position) : Iterator<Position> {
         private var current = start
 
