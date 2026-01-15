@@ -1,6 +1,7 @@
 package io.github.mfabisiak.darwinworld.model.animal
 
 import io.github.mfabisiak.darwinworld.config.AnimalConfig
+import io.github.mfabisiak.darwinworld.model.movement
 import kotlin.random.Random
 
 
@@ -61,3 +62,5 @@ fun Animal.afterBreeding(): Animal {
         throw IllegalStateException("Attempted to breed animal of ID $id, but it is unable to do so")
     return this.copy(energy = energy - config.energyGivenToNewborn)
 }
+
+fun Animal.move() = this.copy(position = position + direction.movement())
