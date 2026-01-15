@@ -1,10 +1,7 @@
 package io.github.mfabisiak.darwinworld.model.map
 
 import io.github.mfabisiak.darwinworld.model.Position
-import io.github.mfabisiak.darwinworld.model.animal.Animal
-import io.github.mfabisiak.darwinworld.model.animal.afterDay
-import io.github.mfabisiak.darwinworld.model.animal.move
-import io.github.mfabisiak.darwinworld.model.animal.rotate
+import io.github.mfabisiak.darwinworld.model.animal.*
 
 fun Animals.update(newAnimal: Animal): Animals {
     return this.put(newAnimal.id, newAnimal)
@@ -75,6 +72,27 @@ fun WorldMap.placeAnimals(positions: Collection<Position>): WorldMap {
 
     return this.copy(animals = newAnimals)
 }
+
+private fun Animals.breed() = this.values
+    .filter { it.canBreed }
+    .groupBy { it.position }
+    .values
+    .filter { it.size >= 2 }
+    .map { animalsAtPosition ->
+        animalsAtPosition.shuffled()
+            .sortedWith(compareBy<Animal> { it.energy }
+                .thenBy { it.age }
+                .thenBy { it.childrenIds.size })
+            .takeLast(2)
+    }
+    .fold(this) { currentAnimals, (parent1, parent2) ->
+        currentAnimals
+            .update(parent1.breed(parent2))
+            .update(parent1.afterBreeding())
+            .update(parent2.afterBreeding())
+    }
+
+fun WorldMap.breedAnimals() = this.copy(animals = animals.breed())
 
 fun WorldMap.addPlant(position: Position) = this.copy(plants = plants.add(position))
 
