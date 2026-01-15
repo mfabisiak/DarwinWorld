@@ -12,9 +12,9 @@ import kotlin.uuid.Uuid
 data class Animal(
     val config: AnimalConfig,
     val position: Position,
-    val energy: Int,
-    val genotype: Genotype,
-    val direction: Direction,
+    val genotype: Genotype = config.randomGenotype(),
+    val energy: Int = config.initialEnergy,
+    val direction: Direction = Direction.random(),
     val age: Int = 0,
     val id: String = Uuid.random().toString(),
     val childrenIds: PersistentSet<String> = persistentSetOf()
@@ -30,5 +30,7 @@ data class Animal(
     val isAlive
         get() = energy > 0
 
+    val canBreed
+        get() = this.energy >= config.energyRequiredToBreed
 }
 

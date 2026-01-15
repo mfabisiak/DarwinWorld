@@ -32,6 +32,10 @@ class PositionClosedRange(val start: Position, val end: Position) : Iterable<Pos
 
     operator fun contains(position: Position) = position follows start && position precedes end
 
+    fun random() = this.toSet().random()
+
+    fun random(n: Int) = this.toSet().shuffled().take(n)
+
     private class Vector2dIterator(val start: Position, val end: Position) : Iterator<Position> {
         private var current = start
 

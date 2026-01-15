@@ -1,7 +1,7 @@
 package io.github.mfabisiak.darwinworld.model.animal
 
 import io.github.mfabisiak.darwinworld.config.AnimalConfig
-import io.github.mfabisiak.darwinworld.model.Direction
+import io.github.mfabisiak.darwinworld.model.movement
 import kotlin.random.Random
 
 
@@ -24,18 +24,18 @@ fun AnimalConfig.genotypeOfParents(parent1: Animal, parent2: Animal): Genotype {
     return Genotype(genesList)
 }
 
-fun Animal.canBreed() = this.energy >= config.energyRequiredToBreed
+fun AnimalConfig.randomGenotype() = Genotype(generateSequence { GENE_RANGE.random() }
+    .take(genotypeSize).toList())
 
 fun Animal.breed(parent2: Animal): Animal {
     val parent1 = this
     with(parent1.config) {
-        if (parent1.canBreed() && parent2.canBreed())
+        if (parent1.canBreed && parent2.canBreed)
             return Animal(
                 config = this,
                 position = parent1.position,
                 genotype = genotypeOfParents(parent1, parent2),
-                energy = 2 * energyGivenToNewborn,
-                direction = Direction.random()
+                energy = 2 * energyGivenToNewborn
             )
         else
             throw IllegalStateException(
@@ -56,7 +56,9 @@ fun Animal.rotate(): Animal {
 }
 
 fun Animal.afterBreeding(): Animal {
-    if (!this.canBreed())
+    if (!this.canBreed)
         throw IllegalStateException("Attempted to breed animal of ID $id, but it is unable to do so")
     return this.copy(energy = energy - config.energyGivenToNewborn)
 }
+
+fun Animal.move() = this.copy(position = position + direction.movement())

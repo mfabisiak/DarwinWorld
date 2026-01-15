@@ -14,7 +14,8 @@ data class TestConfig(
     override val energyGivenToNewborn: Int = 20,
     override val minNumberOfMutations: Int = 0,
     override val maxNumberOfMutations: Int = 5,
-    override val genotypeSize: Int = 5
+    override val genotypeSize: Int = 5,
+    override val initialEnergy: Int = 5
 ) : AnimalConfig
 
 class AnimalBreedingTest {
@@ -26,16 +27,16 @@ class AnimalBreedingTest {
         val animal1 = Animal(
             config,
             Position(1, 1),
-            30,
             Genotype(listOf(1, 0, 0, 5, 4)),
+            30,
             Direction.NORTH
         )
 
         val animal2 = Animal(
             config,
             Position(1, 1),
-            50,
             Genotype(listOf(1, 0, 0, 5, 4)),
+            50,
             Direction.NORTH
         )
         // when + then
@@ -53,16 +54,16 @@ class AnimalBreedingTest {
         val animal1 = Animal(
             config,
             Position(1, 1),
-            100,
             Genotype(listOf(1, 0, 0, 5, 4)),
+            100,
             Direction.NORTH
         )
 
         val animal2 = Animal(
             config,
             Position(1, 1),
-            100,
             Genotype(listOf(1, 0, 0, 5, 4)),
+            100,
             Direction.NORTH
         )
         // when + then
@@ -77,16 +78,16 @@ class AnimalBreedingTest {
         val animal1 = Animal(
             config,
             Position(1, 1),
-            100,
             Genotype(listOf(1, 0, 0, 5, 4)),
+            100,
             Direction.NORTH
         )
 
         val animal2 = Animal(
             config,
             Position(1, 1),
-            100,
             Genotype(listOf(1, 0, 0, 5, 4)),
+            100,
             Direction.NORTH
         )
         // when + then
@@ -103,16 +104,16 @@ class AnimalBreedingTest {
         val animal1 = Animal(
             config,
             Position(1, 1),
+            Genotype(List(25) { Random.nextInt(1, 3) }),
             100,
-            Genotype(List(25) {Random.nextInt(1,3)}),
             Direction.NORTH
         )
 
         val animal2 = Animal(
             config,
             Position(1, 1),
-            100,
             Genotype(List(25) {Random.nextInt(1,3)}),
+            100,
             Direction.NORTH
         )
         // when
@@ -132,9 +133,9 @@ class AnimalBreedingTest {
         // given
         val config = TestConfig(genotypeSize = 10, minNumberOfMutations = 0, maxNumberOfMutations = 0 , energyRequiredToBreed = 10)
 
-        val strongParent = Animal(config, Position(0,0), 90, Genotype(List(10){ 1 }), Direction.NORTH)
+        val strongParent = Animal(config, Position(0, 0), Genotype(List(10) { 1 }), 90, Direction.NORTH)
 
-        val weakParent = Animal(config, Position(0,0), 10, Genotype(List(10){ 2 }), Direction.NORTH)
+        val weakParent = Animal(config, Position(0, 0), Genotype(List(10) { 2 }), 10, Direction.NORTH)
         // when
         val genes = strongParent.breed(weakParent)
             .genotype
