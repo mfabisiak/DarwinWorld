@@ -2,6 +2,7 @@ package io.github.mfabisiak.darwinworld.model.map
 
 import io.github.mfabisiak.darwinworld.model.Position
 import io.github.mfabisiak.darwinworld.model.animal.*
+import kotlin.math.min
 
 fun Animals.update(newAnimal: Animal): Animals {
     return this.put(newAnimal.id, newAnimal)
@@ -26,7 +27,6 @@ private fun WorldMap.eatPlant(animalsAtPosition: Collection<Animal>): WorldMap {
     val newPlants = plants.remove(position)
 
     return this.copy(animals = newAnimals, plants = newPlants)
-
 }
 
 fun WorldMap.eatPlants(): WorldMap = animals.values
@@ -94,11 +94,22 @@ private fun Animals.breed() = this.values
 
 fun WorldMap.breedAnimals() = this.copy(animals = animals.breed())
 
-fun WorldMap.addPlant(position: Position) = this.copy(plants = plants.add(position))
-
 private fun Animals.endDay() = this.values
     .fold(this) { currentAnimals, animal ->
         currentAnimals.update(animal.afterDay())
     }
 
 fun WorldMap.endDay() = this.copy(animals = animals.endDay())
+
+fun WorldMap.spawnPlants(n: Int = config.plantsGrowingEachDay): WorldMap {
+    val availablePositions = config.boundary.toSet() - plants
+
+    val plantsToSpawn = min(n, availablePositions.size)
+
+    val newPlants = availablePositions
+        .shuffled()
+        .take(plantsToSpawn)
+        .fold(plants) { currentPlants, position -> currentPlants.add(position) }
+
+    return this.copy(plants = newPlants)
+}
