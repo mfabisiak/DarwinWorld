@@ -30,5 +30,7 @@ data class Animal(
     val isAlive
         get() = energy > 0
 
+    val canBreed
+        get() = this.energy >= config.energyRequiredToBreed
 }
 
