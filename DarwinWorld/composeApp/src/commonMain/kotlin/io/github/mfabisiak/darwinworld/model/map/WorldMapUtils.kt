@@ -56,7 +56,11 @@ fun WorldMap.moveAnimals(): WorldMap {
 }
 
 fun WorldMap.removeDead(): WorldMap {
-    val (newAnimals, newDeadAnimals) = animals.values
+    val deadUnits = animals.values.filter { it.energy <= 0}
+
+    if (deadUnits.isEmpty()) return this
+
+    val (newAnimals, newDeadAnimals) = deadUnits
         .fold(animals to deadAnimals) { (currentAnimals, currentDeadAnimals), animal ->
             currentAnimals.remove(animal.id) to currentDeadAnimals.update(animal)
         }
