@@ -2,6 +2,7 @@ package io.github.mfabisiak.darwinworld.model.map
 
 import io.github.mfabisiak.darwinworld.model.Position
 import io.github.mfabisiak.darwinworld.model.animal.*
+import io.github.mfabisiak.darwinworld.model.movement
 import kotlin.math.min
 import kotlin.random.Random
 
@@ -50,7 +51,7 @@ fun WorldMap.rotateAnimals(): WorldMap {
 fun WorldMap.moveAnimals(): WorldMap {
     val newAnimals = animals.values
         .fold(animals) { currentAnimals, animal ->
-            currentAnimals.update(animal.move())
+            currentAnimals.update(moveAnimal(animal))
         }
 
     return this.copy(animals = newAnimals)
@@ -58,9 +59,12 @@ fun WorldMap.moveAnimals(): WorldMap {
 
 fun WorldMap.removeDead(): WorldMap {
     val (newAnimals, newDeadAnimals) = animals.values
+        .filter { !it.isAlive }
         .fold(animals to deadAnimals) { (currentAnimals, currentDeadAnimals), animal ->
             currentAnimals.remove(animal.id) to currentDeadAnimals.update(animal)
         }
+
+    if (newDeadAnimals.size == deadAnimals.size) return this
 
     return this.copy(animals = newAnimals, deadAnimals = newDeadAnimals)
 }
@@ -130,3 +134,30 @@ fun WorldMap.spawnPlants(n: Int = config.plantsGrowingEachDay): WorldMap {
 
     return this.copy(plants = plants.addAll(plantsToAdd))
 }
+
+private fun WorldMap.moveAnimal(animal: Animal): Animal {
+    val position = animal.move()
+    val boundary = config.boundary
+
+    if (position in boundary) return animal.copy(position = position)
+
+    val newX = boundary.start.x + (position.x - boundary.start.x).mod(boundary.width)
+
+    if (position over boundary) {
+        val newPosition = Position(newX, boundary.end.y)
+        val newDirection = -animal.direction
+        return animal.copy(position = newPosition, direction = newDirection)
+    }
+
+    if (position under boundary) {
+        val newPosition = Position(newX, boundary.start.y)
+        val newDirection = -animal.direction
+        return animal.copy(position = newPosition, direction = newDirection)
+    }
+
+    val newPosition = Position(newX, position.y)
+
+    return animal.copy(position = newPosition)
+}
+
+private fun Animal.move() = position + direction.movement()

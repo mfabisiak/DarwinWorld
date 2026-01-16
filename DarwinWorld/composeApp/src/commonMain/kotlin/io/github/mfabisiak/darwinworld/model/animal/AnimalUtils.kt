@@ -1,7 +1,6 @@
 package io.github.mfabisiak.darwinworld.model.animal
 
 import io.github.mfabisiak.darwinworld.config.AnimalConfig
-import io.github.mfabisiak.darwinworld.model.movement
 import kotlin.random.Random
 
 
@@ -61,4 +60,3 @@ fun Animal.afterBreeding(): Animal {
     return this.copy(energy = energy - config.energyGivenToNewborn)
 }
 
-fun Animal.move() = this.copy(position = position + direction.movement())
