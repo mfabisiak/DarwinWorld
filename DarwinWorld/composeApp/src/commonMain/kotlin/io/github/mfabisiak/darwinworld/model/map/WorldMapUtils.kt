@@ -27,7 +27,6 @@ private fun WorldMap.eatPlant(animalsAtPosition: Collection<Animal>): WorldMap {
     val newPlants = plants.remove(position)
 
     return this.copy(animals = newAnimals, plants = newPlants)
-
 }
 
 fun WorldMap.eatPlants(): WorldMap = animals.values
@@ -97,8 +96,6 @@ private fun Animals.breed() = this.values
     }
 
 fun WorldMap.breedAnimals() = this.copy(animals = animals.breed())
-
-fun WorldMap.addPlant(position: Position) = this.copy(plants = plants.add(position))
 
 private fun Animals.endDay() = this.values
     .fold(this) { currentAnimals, animal ->
