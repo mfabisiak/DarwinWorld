@@ -122,7 +122,7 @@ private fun randomPlantPosition(
 
 fun WorldMap.spawnPlants(n: Int = config.plantsGrowingEachDay): WorldMap {
     val availableJunglePositions = (config.jungle.toSet() - plants).toMutableSet()
-    val availableSteppePositions = (config.boundary.toSet() - plants).toMutableSet()
+    val availableSteppePositions = (config.boundary.toSet() - config.jungle.toSet() - plants).toMutableSet()
 
     val plantsToAdd = generateSequence { randomPlantPosition(availableJunglePositions, availableSteppePositions) }
         .take(min(n, availableSteppePositions.size + availableJunglePositions.size))
