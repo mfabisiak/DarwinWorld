@@ -111,7 +111,7 @@ private fun WorldMap.moveAnimal(animal: Animal): Animal {
     val position = animal.move()
     val boundary = config.boundary
 
-    if (position in boundary) return animal
+    if (position in boundary) return animal.copy(position = position)
 
     val newX = boundary.start.x + (position.x - boundary.start.x).mod(boundary.width)
 

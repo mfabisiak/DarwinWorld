@@ -22,7 +22,7 @@ data class ProductionConfig(
     override val jungle = let {
         val jungleHeight = ((upperBound.y - lowerBound.y) * 0.2).toInt()
 
-        val jungleLowerBound = Position(lowerBound.x, jungleHeight - (jungleHeight / 2))
+        val jungleLowerBound = Position(lowerBound.x, (boundary.height - jungleHeight) / 2)
         val jungleUpperBound = Position(upperBound.x, jungleLowerBound.y + jungleHeight)
 
         jungleLowerBound..jungleUpperBound

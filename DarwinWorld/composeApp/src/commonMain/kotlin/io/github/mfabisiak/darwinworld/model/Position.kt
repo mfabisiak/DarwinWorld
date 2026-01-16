@@ -16,7 +16,7 @@ data class Position(val x: Int, val y: Int) {
     infix fun over(range: PositionClosedRange) = this.y > range.end.y
 
     infix fun under(range: PositionClosedRange) = this.y < range.start.y
-    
+
 }
 
 fun Direction.movement(): Position = when(this) {
