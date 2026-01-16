@@ -3,6 +3,7 @@ package io.github.mfabisiak.darwinworld.model.map
 import io.github.mfabisiak.darwinworld.model.Position
 import io.github.mfabisiak.darwinworld.model.animal.*
 import kotlin.math.min
+import kotlin.random.Random
 
 fun Animals.update(newAnimal: Animal): Animals {
     return this.put(newAnimal.id, newAnimal)
@@ -101,15 +102,31 @@ private fun Animals.endDay() = this.values
 
 fun WorldMap.endDay() = this.copy(animals = animals.endDay())
 
+private fun randomPlantPosition(
+    availableJunglePositions: MutableSet<Position>,
+    availableSteppePositions: MutableSet<Position>
+): Position? {
+    val inJungle = Random.nextDouble() < 0.8
+
+    val chosenPosition = if (inJungle) {
+        availableJunglePositions.randomOrNull() ?: availableSteppePositions.randomOrNull()
+    } else {
+        availableSteppePositions.randomOrNull() ?: availableJunglePositions.randomOrNull()
+    }
+
+    availableJunglePositions.remove(chosenPosition)
+    availableSteppePositions.remove(chosenPosition)
+
+    return chosenPosition
+}
+
 fun WorldMap.spawnPlants(n: Int = config.plantsGrowingEachDay): WorldMap {
-    val availablePositions = config.boundary.toSet() - plants
+    val availableJunglePositions = (config.jungle.toSet() - plants).toMutableSet()
+    val availableSteppePositions = (config.boundary.toSet() - plants).toMutableSet()
 
-    val plantsToSpawn = min(n, availablePositions.size)
+    val plantsToAdd = generateSequence { randomPlantPosition(availableJunglePositions, availableSteppePositions) }
+        .take(min(n, availableSteppePositions.size + availableJunglePositions.size))
+        .toList()
 
-    val newPlants = availablePositions
-        .shuffled()
-        .take(plantsToSpawn)
-        .fold(plants) { currentPlants, position -> currentPlants.add(position) }
-
-    return this.copy(plants = newPlants)
+    return this.copy(plants = plants.addAll(plantsToAdd))
 }
