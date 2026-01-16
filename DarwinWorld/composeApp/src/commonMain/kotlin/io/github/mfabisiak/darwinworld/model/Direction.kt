@@ -20,6 +20,8 @@ enum class Direction {
     operator fun plus(other: Int) = directionsList[this.ordinal + other]
 
     operator fun minus(other:Int) = directionsList[this.ordinal - other]
+
+    operator fun unaryMinus() = directionsList[this.ordinal + 4]
 }
 
 private val directionsList = CircularList(Direction.entries)
