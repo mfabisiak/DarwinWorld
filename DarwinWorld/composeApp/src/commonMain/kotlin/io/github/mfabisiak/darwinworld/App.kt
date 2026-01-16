@@ -1,26 +1,26 @@
 package io.github.mfabisiak.darwinworld
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import io.github.mfabisiak.darwinworld.config.SimulationConfig
+import io.github.mfabisiak.darwinworld.ui.AnimationScreen
 
-import io.github.mfabisiak.darwinworld.features.config.ConfigInputScreen
+import io.github.mfabisiak.darwinworld.ui.ConfigInputScreen
 
 
 @Composable
 fun App() {
     MaterialTheme{
-        ConfigInputScreen(
-            onSimulationStart = { config ->
-                println("$config")
-        })
+        var currentConfig by remember { mutableStateOf<SimulationConfig?>(null)}
+        if (currentConfig == null){
+            ConfigInputScreen(
+                onSimulationStart = { newConfig ->
+                    currentConfig = newConfig
+                }
+            )
+        }
+        else{
+            AnimationScreen(config = currentConfig!!)
+        }
     }
 }
