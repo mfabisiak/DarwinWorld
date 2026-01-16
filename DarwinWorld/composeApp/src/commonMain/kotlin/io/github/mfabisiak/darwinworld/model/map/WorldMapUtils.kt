@@ -2,6 +2,7 @@ package io.github.mfabisiak.darwinworld.model.map
 
 import io.github.mfabisiak.darwinworld.model.Position
 import io.github.mfabisiak.darwinworld.model.animal.*
+import io.github.mfabisiak.darwinworld.model.movement
 
 fun Animals.update(newAnimal: Animal): Animals {
     return this.put(newAnimal.id, newAnimal)
@@ -49,7 +50,7 @@ fun WorldMap.rotateAnimals(): WorldMap {
 fun WorldMap.moveAnimals(): WorldMap {
     val newAnimals = animals.values
         .fold(animals) { currentAnimals, animal ->
-            currentAnimals.update(animal.move())
+            currentAnimals.update(moveAnimal(animal))
         }
 
     return this.copy(animals = newAnimals)
@@ -105,3 +106,30 @@ private fun Animals.endDay() = this.values
     }
 
 fun WorldMap.endDay() = this.copy(animals = animals.endDay())
+
+private fun WorldMap.moveAnimal(animal: Animal): Animal {
+    val position = animal.move()
+    val boundary = config.boundary
+
+    if (position in boundary) return animal
+
+    val newX = boundary.start.x + (position.x - boundary.start.x).mod(boundary.width)
+
+    if (position over boundary) {
+        val newPosition = Position(newX, boundary.end.y)
+        val newDirection = -animal.direction
+        return animal.copy(position = newPosition, direction = newDirection)
+    }
+
+    if (position under boundary) {
+        val newPosition = Position(newX, boundary.start.y)
+        val newDirection = -animal.direction
+        return animal.copy(position = newPosition, direction = newDirection)
+    }
+
+    val newPosition = Position(newX, position.y)
+
+    return animal.copy(position = newPosition)
+}
+
+private fun Animal.move() = position + direction.movement()
