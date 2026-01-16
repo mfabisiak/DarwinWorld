@@ -1,15 +1,13 @@
 package io.github.mfabisiak.darwinworld.ui
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import io.github.mfabisiak.darwinworld.Simulation
 import io.github.mfabisiak.darwinworld.config.SimulationConfig
 import io.github.mfabisiak.darwinworld.ui.components.MapVisualizer
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 
 @Composable
 fun AnimationScreen(config : SimulationConfig){
@@ -19,12 +17,15 @@ fun AnimationScreen(config : SimulationConfig){
     val currentMap by simulation.worldMap.collectAsState()
 
     LaunchedEffect(Unit){
-        while(true) {
-            delay(3000)
-            simulation.simulateDay()
+        withContext(Dispatchers.Default) {
+            while (true) {
+                delay(3000)
+                simulation.simulateDay()
+            }
         }
     }
-    Column(){
+
+    Column {
         MapVisualizer(currentMap, config.upperBound.y + 1, config.upperBound.x + 1)
     }
 
