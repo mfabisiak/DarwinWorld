@@ -10,8 +10,6 @@ interface MapConfig : AnimalConfig {
     val plantsGrowingEachDay: Int
     val jungle: PositionClosedRange
 
-    fun randomPlantPosition(takenPositions: Set<Position>): Position
-
     val boundary: PositionClosedRange
         get() = lowerBound..upperBound
 }
