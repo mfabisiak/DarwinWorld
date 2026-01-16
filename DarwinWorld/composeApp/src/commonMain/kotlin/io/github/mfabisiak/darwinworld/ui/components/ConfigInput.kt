@@ -1,4 +1,4 @@
-package io.github.mfabisiak.darwinworld.features.config
+package io.github.mfabisiak.darwinworld.ui.components
 
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -11,8 +11,7 @@ fun ConfigInput(
     sendOnChange: (Int) -> Unit
 ){
     OutlinedTextField(
-        value = if (value == 0) "" else value.toString(),
-
+        value = value.toString(),
         onValueChange = { text ->
             val digits = text.filter { it.isDigit() }
             sendOnChange(digits.toIntOrNull() ?: 0)
