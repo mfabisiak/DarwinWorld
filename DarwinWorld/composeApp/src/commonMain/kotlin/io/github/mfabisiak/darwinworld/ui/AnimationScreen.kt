@@ -7,6 +7,7 @@ import io.github.mfabisiak.darwinworld.config.SimulationConfig
 import io.github.mfabisiak.darwinworld.ui.components.MapVisualizer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
 
 @Composable
@@ -18,8 +19,8 @@ fun AnimationScreen(config : SimulationConfig){
 
     LaunchedEffect(Unit){
         withContext(Dispatchers.Default) {
-            while (true) {
-                delay(3000)
+            while (isActive) {
+                delay(300)
                 simulation.simulateDay()
             }
         }
