@@ -13,6 +13,10 @@ data class Position(val x: Int, val y: Int) {
 
     operator fun rangeTo(other: Position) = PositionClosedRange(this, other)
 
+    infix fun overOrUnder(range: PositionClosedRange) = this.y > range.end.y || this.y < range.start.y
+
+    infix fun exceedsOnSides(range: PositionClosedRange) = this.x < range.start.x || this.x > range.end.x
+
 }
 
 fun Direction.movement(): Position = when(this) {
