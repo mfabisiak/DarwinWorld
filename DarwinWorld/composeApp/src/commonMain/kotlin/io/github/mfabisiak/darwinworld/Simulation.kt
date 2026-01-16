@@ -14,15 +14,13 @@ class Simulation(config: SimulationConfig) {
         get() = _worldMap.asStateFlow()
 
     init {
-        val mapWithPlants = (0..<config.numberOfPlants).fold(_worldMap.value) { currentMap, _ ->
-            currentMap.addPlant(config.randomPlantPosition(currentMap.plants))
-        }
-
         val animalsPositions = config.boundary.random(config.numberOfAnimals)
 
-        val mapWithAnimals = mapWithPlants.placeAnimals(animalsPositions)
+        val initialMap = _worldMap.value
+            .spawnPlants()
+            .placeAnimals(animalsPositions)
 
-        updateMapState(mapWithAnimals)
+        updateMapState(initialMap)
     }
 
     private fun updateMapState(newWorldMap: WorldMap) {
@@ -36,6 +34,7 @@ class Simulation(config: SimulationConfig) {
             .moveAnimals()
             .eatPlants()
             .breedAnimals()
+            .spawnPlants()
             .endDay()
 
         updateMapState(newMap)

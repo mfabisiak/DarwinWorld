@@ -2,6 +2,8 @@ package io.github.mfabisiak.darwinworld.model.map
 
 import io.github.mfabisiak.darwinworld.model.Position
 import io.github.mfabisiak.darwinworld.model.animal.*
+import kotlin.math.min
+import kotlin.random.Random
 
 fun Animals.update(newAnimal: Animal): Animals {
     return this.put(newAnimal.id, newAnimal)
@@ -26,7 +28,6 @@ private fun WorldMap.eatPlant(animalsAtPosition: Collection<Animal>): WorldMap {
     val newPlants = plants.remove(position)
 
     return this.copy(animals = newAnimals, plants = newPlants)
-
 }
 
 fun WorldMap.eatPlants(): WorldMap = animals.values
@@ -94,11 +95,38 @@ private fun Animals.breed() = this.values
 
 fun WorldMap.breedAnimals() = this.copy(animals = animals.breed())
 
-fun WorldMap.addPlant(position: Position) = this.copy(plants = plants.add(position))
-
 private fun Animals.endDay() = this.values
     .fold(this) { currentAnimals, animal ->
         currentAnimals.update(animal.afterDay())
     }
 
 fun WorldMap.endDay() = this.copy(animals = animals.endDay())
+
+private fun randomPlantPosition(
+    availableJunglePositions: MutableSet<Position>,
+    availableSteppePositions: MutableSet<Position>
+): Position? {
+    val inJungle = Random.nextDouble() < 0.8
+
+    val chosenPosition = if (inJungle) {
+        availableJunglePositions.randomOrNull() ?: availableSteppePositions.randomOrNull()
+    } else {
+        availableSteppePositions.randomOrNull() ?: availableJunglePositions.randomOrNull()
+    }
+
+    availableJunglePositions.remove(chosenPosition)
+    availableSteppePositions.remove(chosenPosition)
+
+    return chosenPosition
+}
+
+fun WorldMap.spawnPlants(n: Int = config.plantsGrowingEachDay): WorldMap {
+    val availableJunglePositions = (config.jungle.toSet() - plants).toMutableSet()
+    val availableSteppePositions = (config.boundary.toSet() - config.jungle.toSet() - plants).toMutableSet()
+
+    val plantsToAdd = generateSequence { randomPlantPosition(availableJunglePositions, availableSteppePositions) }
+        .take(min(n, availableSteppePositions.size + availableJunglePositions.size))
+        .toList()
+
+    return this.copy(plants = plants.addAll(plantsToAdd))
+}
