@@ -9,7 +9,10 @@ interface MapConfig : AnimalConfig {
     val energyFromSinglePlant: Int
     val plantsGrowingEachDay: Int
     val jungle: PositionClosedRange
-    val fastModeConfig: FastModeConfig?
+    val energyRequiredToMoveFast: Int
+    val energyPerExtraStep: Int
+    val maxRange: Int
+    val fastAnimalsEnabled: Boolean
 
     val boundary: PositionClosedRange
         get() = lowerBound..upperBound

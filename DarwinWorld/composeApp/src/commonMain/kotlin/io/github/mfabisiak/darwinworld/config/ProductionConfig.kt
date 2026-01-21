@@ -16,7 +16,10 @@ data class ProductionConfig(
     override val upperBound: Position = Position(5, 5),
     override val energyFromSinglePlant: Int = 20,
     override val initialEnergy: Int = 100,
-    override val fastModeConfig: FastModeConfig? = null
+    override val energyRequiredToMoveFast: Int = 20,
+    override val energyPerExtraStep: Int = 5,
+    override val maxRange: Int = 1,
+    override val fastAnimalsEnabled: Boolean = false
 ) : SimulationConfig {
 
     override val jungle = let {
