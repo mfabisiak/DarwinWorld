@@ -148,6 +148,50 @@ class WorldMapTest {
     }
 
     @Test
+    fun animalShouldWrapAroundHorizontallyAndBounceVertically() {
+        // given
+        val config = ProductionConfig(upperBound = Position(2, 2))
+
+        val startPos = Position(2, 2)
+
+        val animal = Animal(
+            config = config,
+            position = startPos,
+            direction = Direction.NORTH_EAST
+        )
+        val map = WorldMap(config, animals = persistentMapOf(animal.id to animal))
+        // when
+        val newMap = map.moveAnimals()
+
+        val movedAnimal = newMap.animals.values.first()
+        // then
+        assertEquals(Position(0, 2), movedAnimal.position)
+        assertEquals(Direction.SOUTH_WEST, movedAnimal.direction)
+    }
+
+    @Test
+    fun animalShouldBounceVerticallyAndReverseDirection() {
+        // given
+        val config = ProductionConfig(upperBound = Position(2, 2))
+
+        val startPos = Position(1, 2)
+
+        val animal = Animal(
+            config = config,
+            position = startPos,
+            direction = Direction.NORTH_WEST
+        )
+        val map = WorldMap(config, animals = persistentMapOf(animal.id to animal))
+        // when
+        val newMap = map.moveAnimals()
+
+        val movedAnimal = newMap.animals.values.first()
+        // then
+        assertEquals(Position(0, 2), movedAnimal.position)
+        assertEquals(Direction.SOUTH_EAST, movedAnimal.direction)
+    }
+
+    @Test
     fun deadAnimalsShouldBeRemovedAndAddedToHistory() {
         // given
         val config = ProductionConfig()
@@ -201,4 +245,5 @@ class WorldMapTest {
         assertEquals(1, animalAfter.age)
         assertEquals(15, animalAfter.energy)
     }
+
 }
