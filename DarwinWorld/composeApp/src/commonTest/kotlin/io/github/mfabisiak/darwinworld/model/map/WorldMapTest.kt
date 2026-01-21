@@ -1,10 +1,8 @@
 package io.github.mfabisiak.darwinworld.model.map
 
-import io.github.mfabisiak.darwinworld.config.AnimalConfig
-import io.github.mfabisiak.darwinworld.config.MapConfig
+import io.github.mfabisiak.darwinworld.config.ProductionConfig
 import io.github.mfabisiak.darwinworld.model.Direction
 import io.github.mfabisiak.darwinworld.model.Position
-import io.github.mfabisiak.darwinworld.model.PositionClosedRange
 import io.github.mfabisiak.darwinworld.model.animal.Animal
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.persistentSetOf
@@ -12,30 +10,15 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-data class TestMapConfig(
-    override val lowerBound: Position = Position(0, 0),
-    override val upperBound: Position = Position(4, 4),
-    override val jungle: PositionClosedRange = Position(0, 2)..Position(4, 3),
-    override val initialEnergy: Int = 100,
-    override val energyConsumedEachDay: Int = 0,
-    override val energyRequiredToBreed: Int = 50,
-    override val energyGivenToNewborn: Int = 20,
-    override val minNumberOfMutations: Int = 0,
-    override val maxNumberOfMutations: Int = 0,
-    override val genotypeSize: Int = 5,
-    override val energyFromSinglePlant: Int = 20,
-    override val plantsGrowingEachDay: Int = 1
-) : MapConfig
-
 class WorldMapTest {
 
     @Test
-    fun strongestAnimalShouldEatFirstWhenConflictOccurs(){
+    fun strongestAnimalShouldEatFirstWhenConflictOccurs() {
         // given
-        val weakConfig = TestMapConfig(initialEnergy = 20)
-        val strongConfig = TestMapConfig(initialEnergy = 70)
+        val weakConfig = ProductionConfig(initialEnergy = 20)
+        val strongConfig = ProductionConfig(initialEnergy = 70)
 
-        val pos = Position(2,3)
+        val pos = Position(2, 3)
         val weakAnimal = Animal(weakConfig, pos)
         val strongAnimal = Animal(strongConfig, pos)
 
@@ -53,8 +36,8 @@ class WorldMapTest {
         val weakAfter = newMap.animals[weakAnimal.id]!!
         val strongAfter = newMap.animals[strongAnimal.id]!!
         // then
-        assertEquals(20,weakAfter.energy)
-        assertEquals(90,strongAfter.energy)
+        assertEquals(20, weakAfter.energy)
+        assertEquals(90, strongAfter.energy)
         assertTrue(newMap.plants.isEmpty())
 
     }
@@ -62,7 +45,7 @@ class WorldMapTest {
     @Test
     fun olderAnimalShouldEatFirstWhenEnergyIsEqual() {
         // given
-        val config = TestMapConfig(energyFromSinglePlant = 20)
+        val config = ProductionConfig(energyFromSinglePlant = 20)
         val pos = Position(1, 1)
 
         val youngerAnimal = Animal(config, position = pos, energy = 50, age = 2)
@@ -90,7 +73,7 @@ class WorldMapTest {
     @Test
     fun animalWithMoreChildrenShouldEatFirstWhenEnergyAndAgeAreEqual() {
         // given
-        val config = TestMapConfig()
+        val config = ProductionConfig()
         val pos = Position(1, 1)
 
         val childlessAnimal = Animal(config, position = pos, energy = 50, age = 10)
@@ -124,7 +107,7 @@ class WorldMapTest {
     @Test
     fun animalShouldWrapAroundMapHorizontally() {
         // given
-        val config = TestMapConfig(upperBound = Position(2, 2))
+        val config = ProductionConfig(upperBound = Position(2, 2))
         val startPos = Position(2, 1)
 
         val animal = Animal(
@@ -139,14 +122,14 @@ class WorldMapTest {
         val movedAnimal = newMap.animals.values.first()
 
         // then
-        assertEquals(0, movedAnimal.position.x)
-        assertEquals(1, movedAnimal.position.y)
+        assertEquals(Position(0, 1), movedAnimal.position)
+        assertEquals(Direction.EAST, movedAnimal.direction)
     }
 
     @Test
     fun animalShouldBounceOffPoleAndReverseDirection() {
         // given
-        val config = TestMapConfig(upperBound = Position(2, 2))
+        val config = ProductionConfig(upperBound = Position(2, 2))
         val startPos = Position(1, 2)
 
         val animal = Animal(
@@ -160,17 +143,16 @@ class WorldMapTest {
 
         val movedAnimal = newMap.animals.values.first()
         // then
-        assertEquals(1, movedAnimal.position.x)
-        assertEquals(2, movedAnimal.position.y)
+        assertEquals(Position(1, 2), movedAnimal.position)
         assertEquals(Direction.SOUTH, movedAnimal.direction)
     }
 
     @Test
     fun deadAnimalsShouldBeRemovedAndAddedToHistory() {
         // given
-        val config = TestMapConfig()
-        val deadAnimal = Animal(config, Position(1,1), energy = 0)
-        val aliveAnimal = Animal(config, Position(1,2), energy = 10)
+        val config = ProductionConfig()
+        val deadAnimal = Animal(config, Position(1, 1), energy = 0)
+        val aliveAnimal = Animal(config, Position(1, 2), energy = 10)
 
         val map = WorldMap(
             config,
@@ -183,17 +165,14 @@ class WorldMapTest {
         val newMap = map.removeDead()
 
         // then
-        assertEquals(1, newMap.animals.size)
-        assertTrue(newMap.animals.containsKey(aliveAnimal.id))
-
-        assertEquals(1, newMap.deadAnimals.size)
-        assertTrue(newMap.deadAnimals.containsKey(deadAnimal.id))
+        assertEquals(persistentMapOf(aliveAnimal.id to aliveAnimal), newMap.animals)
+        assertEquals(persistentMapOf(deadAnimal.id to deadAnimal), newMap.deadAnimals)
     }
 
     @Test
     fun plantsShouldSpawnOnEmptyMap() {
         // given
-        val config = TestMapConfig(
+        val config = ProductionConfig(
             plantsGrowingEachDay = 5,
             upperBound = Position(9, 9)
         )
@@ -208,8 +187,8 @@ class WorldMapTest {
     @Test
     fun animalsShouldAgeAndLoseEnergyAtEndOfDay() {
         // given
-        val config = TestMapConfig(energyConsumedEachDay = 5)
-        val animal = Animal(config, Position(1,1), age = 0, energy = 20)
+        val config = ProductionConfig(energyConsumedEachDay = 5)
+        val animal = Animal(config, Position(1, 1), age = 0, energy = 20)
 
         val map = WorldMap(
             config,
