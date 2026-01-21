@@ -1,7 +1,5 @@
 package io.github.mfabisiak.darwinworld.model.map
 
-import io.github.mfabisiak.darwinworld.config.MapConfig
-import io.github.mfabisiak.darwinworld.model.Direction
 import io.github.mfabisiak.darwinworld.model.Position
 import io.github.mfabisiak.darwinworld.model.animal.*
 import io.github.mfabisiak.darwinworld.model.movement
@@ -56,41 +54,30 @@ fun WorldMap.rotateAnimals(): WorldMap {
     return this.copy(animals = newAnimals)
 }
 
-/*
 fun WorldMap.moveAnimals(): WorldMap {
-    val newAnimals = animals.values
-        .fold(animals) { currentAnimals, animal ->
-            currentAnimals.update(moveAnimal(animal))
-        }
 
-    return this.copy(animals = newAnimals)
-}
-*/
-fun WorldMap.moveAnimals(): WorldMap {
-    val fastConfig = config.fastModeConfig
-
-    val occupiedPositions = if (fastConfig != null) animals.values.map { it.position }.toSet() else emptySet()
-
-    var currentPlants = plants
-
-    val newAnimals = animals.values.fold(animals) { currentAnimals, animal ->
-
-        if (fastConfig != null) {
-
-            val result = this.moveAnimalFast(animal, occupiedPositions)
-
-            if (result.trampledPlants.isNotEmpty()) {
-                currentPlants = currentPlants.removeAll(result.trampledPlants)
-            }
-            currentAnimals.update(result.animal)
-
-        } else {
-            val (nextPosition, nextDirection) = calculateNextStep(animal, config)
-            currentAnimals.update(animal.copy(position = nextPosition, direction = nextDirection))
-        }
-
+    val occupiedPositions = if (config.fastAnimalsEnabled) {
+        animals.values.map { it.position }.toSet()
+    } else {
+        emptySet()
     }
-    return this.copy(animals = newAnimals, plants = currentPlants)
+
+    val moveResults = animals.values.map { animal ->
+        if (config.fastAnimalsEnabled) {
+            moveAnimalFast(animal, occupiedPositions)
+        } else {
+            MoveResult(moveAnimal(animal), emptySet())
+        }
+    }
+
+    val newAnimals = moveResults.fold(animals) { currentAnimals, result ->
+        currentAnimals.update(result.animal)
+    }
+
+    val allTrampledPlants = moveResults.flatMap { it.trampledPlants }.toSet()
+    val newPlants = plants.removeAll(allTrampledPlants)
+
+    return this.copy(animals = newAnimals, plants = newPlants)
 }
 
 fun WorldMap.removeDead(): WorldMap {
@@ -171,7 +158,6 @@ fun WorldMap.spawnPlants(n: Int = config.plantsGrowingEachDay): WorldMap {
     return this.copy(plants = plants.addAll(plantsToAdd))
 }
 
-/*
 private fun WorldMap.moveAnimal(animal: Animal): Animal {
     val position = animal.move()
     val boundary = config.boundary
@@ -196,68 +182,41 @@ private fun WorldMap.moveAnimal(animal: Animal): Animal {
 
     return animal.copy(position = newPosition)
 }
-*/
+
 private fun Animal.move() = position + direction.movement()
 
-
-fun calculateNextStep(animal: Animal, config: MapConfig): Pair<Position, Direction> {
-    val position = animal.move()
-    val boundary = config.boundary
-
-    if (position in boundary) {
-        return position to animal.direction
-    }
-
-    val newX = boundary.start.x + (position.x - boundary.start.x).mod(boundary.width)
-
-    if (position over boundary) {
-        val newPosition = Position(newX, boundary.end.y)
-        val newDirection = -animal.direction
-        return newPosition to newDirection
-    }
-    if (position under boundary) {
-        val newPosition = Position(newX, boundary.start.y)
-        val newDirection = -animal.direction
-        return newPosition to newDirection
-    }
-
-    return Position(newX, position.y) to animal.direction
-}
-
-
-fun WorldMap.moveAnimalFast(
+private fun WorldMap.moveAnimalFast(
     animal: Animal,
     occupiedPositions: Set<Position>
 ): MoveResult {
-    val fastConfig = config.fastModeConfig!!
 
-    val extraSteps = (animal.energy - fastConfig.energyRequiredToMoveFast) / fastConfig.costPerStep
-    val speed = min(fastConfig.maxRange, 1 + max(0, extraSteps))
+    val extraSteps = (animal.energy - config.energyRequiredToMoveFast) / config.energyPerExtraStep
+    val currentRange = min(config.maxRange, 1 + max(0, extraSteps))
 
     var currentAnimal = animal
     val trampledPlants = mutableSetOf<Position>()
-
     var collision = false
 
-    for (i in 1..speed) {
-        val (nextPosition, nextDirection) = calculateNextStep(currentAnimal, config)
+    for (step in 1..currentRange) {
+
+        val movedAnimal = moveAnimal(currentAnimal)
+        val nextPosition = movedAnimal.position
 
         if (nextPosition in occupiedPositions && nextPosition != animal.position) {
             collision = true
-
-            currentAnimal = currentAnimal.copy(position = nextPosition, direction = nextDirection)
+            currentAnimal = movedAnimal
             break
         }
 
-        if (nextPosition in plants) {
+        if (step < currentRange && nextPosition in plants) {
             trampledPlants.add(nextPosition)
         }
 
-        currentAnimal = currentAnimal.copy(position = nextPosition, direction = nextDirection)
+        currentAnimal = movedAnimal
     }
 
     val energyPenalty = if (collision) config.energyConsumedEachDay else 0
-    currentAnimal = currentAnimal.copy(energy = currentAnimal.energy - energyPenalty)
+    val finalEnergy = max(0, currentAnimal.energy - energyPenalty)
 
-    return MoveResult(currentAnimal, trampledPlants)
+    return MoveResult(currentAnimal.copy(energy = finalEnergy), trampledPlants)
 }
