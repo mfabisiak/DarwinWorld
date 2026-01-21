@@ -25,7 +25,7 @@ class SimulationTest {
     }
 
     @Test
-    fun populationShouldDieOutUnderConditions() {
+    fun populationShouldDieOutWithoutPlants() {
         // given
         val config = ProductionConfig(
             numberOfAnimals = 10,

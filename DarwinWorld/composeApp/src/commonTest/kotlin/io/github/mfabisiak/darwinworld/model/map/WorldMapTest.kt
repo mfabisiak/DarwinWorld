@@ -165,8 +165,8 @@ class WorldMapTest {
         val newMap = map.removeDead()
 
         // then
-        assertEquals(persistentMapOf(aliveAnimal.id to aliveAnimal), newMap.animals)
-        assertEquals(persistentMapOf(deadAnimal.id to deadAnimal), newMap.deadAnimals)
+        assertEquals(mapOf(aliveAnimal.id to aliveAnimal), newMap.animals)
+        assertEquals(mapOf(deadAnimal.id to deadAnimal), newMap.deadAnimals)
     }
 
     @Test
