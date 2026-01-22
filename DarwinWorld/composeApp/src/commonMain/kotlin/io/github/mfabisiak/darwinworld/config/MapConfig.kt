@@ -12,8 +12,6 @@ interface MapConfig : AnimalConfig {
     val energyRequiredToMoveFast: Int
     val energyPerExtraStep: Int
     val maxRange: Int
-    val fastAnimalsEnabled: Boolean
-
     val boundary: PositionClosedRange
         get() = lowerBound..upperBound
 }

@@ -19,7 +19,7 @@ data class ProductionConfig(
     override val energyRequiredToMoveFast: Int = 20,
     override val energyPerExtraStep: Int = 5,
     override val maxRange: Int = 1,
-    override val fastAnimalsEnabled: Boolean = false
+    val fastAnimalsEnabled: Boolean = false
 ) : SimulationConfig {
 
     override val jungle = let {

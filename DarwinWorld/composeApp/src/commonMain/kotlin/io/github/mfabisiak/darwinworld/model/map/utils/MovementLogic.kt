@@ -15,18 +15,10 @@ private data class MoveResult(
 
 internal fun WorldMap.moveAnimals(): WorldMap {
 
-    val occupiedPositions = if (config.fastAnimalsEnabled) {
-        animals.values.map { it.position }.toSet()
-    } else {
-        emptySet()
-    }
+    val occupiedPositions = animals.values.map { it.position }.toSet()
 
     val moveResults = animals.values.map { animal ->
-        if (config.fastAnimalsEnabled) {
-            moveAnimalFast(animal, occupiedPositions)
-        } else {
-            MoveResult(moveAnimal(animal), emptySet())
-        }
+        moveAnimalFast(animal, occupiedPositions)
     }
 
     val newAnimals = moveResults.fold(animals) { currentAnimals, result ->
