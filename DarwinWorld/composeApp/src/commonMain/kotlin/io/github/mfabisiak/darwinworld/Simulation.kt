@@ -17,7 +17,7 @@ class Simulation(config: SimulationConfig) {
         val animalsPositions = config.boundary.random(config.numberOfAnimals)
 
         val initialMap = _worldMap.value
-            .spawnPlants()
+            .spawnPlants(config.numberOfPlants)
             .placeAnimals(animalsPositions)
 
         updateMapState(initialMap)
