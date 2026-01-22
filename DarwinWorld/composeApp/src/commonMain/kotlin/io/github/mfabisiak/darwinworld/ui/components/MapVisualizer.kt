@@ -15,7 +15,7 @@ import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import darwinworld.composeapp.generated.resources.*
-import io.github.mfabisiak.darwinworld.model.map.WorldMap
+import io.github.mfabisiak.darwinworld.logic.model.map.WorldMap
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
