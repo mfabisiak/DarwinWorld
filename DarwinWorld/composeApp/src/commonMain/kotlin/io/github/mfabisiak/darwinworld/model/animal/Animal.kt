@@ -17,7 +17,8 @@ data class Animal(
     val direction: Direction = Direction.random(),
     val age: Int = 0,
     val id: String = Uuid.random().toString(),
-    val childrenIds: PersistentSet<String> = persistentSetOf()
+    val childrenIds: PersistentSet<String> = persistentSetOf(),
+    val birthDay: Int = 0
 ) {
 
     init {
