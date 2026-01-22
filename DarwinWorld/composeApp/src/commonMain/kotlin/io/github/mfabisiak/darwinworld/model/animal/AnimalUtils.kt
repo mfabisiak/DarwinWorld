@@ -4,7 +4,7 @@ import io.github.mfabisiak.darwinworld.config.AnimalConfig
 import kotlin.random.Random
 
 
-fun AnimalConfig.genotypeOfParents(parent1: Animal, parent2: Animal): Genotype {
+internal fun AnimalConfig.genotypeOfParents(parent1: Animal, parent2: Animal): Genotype {
 
     val (leftParent, rightParent) = setOf(parent1, parent2).shuffled()
 
@@ -23,10 +23,10 @@ fun AnimalConfig.genotypeOfParents(parent1: Animal, parent2: Animal): Genotype {
     return Genotype(genesList)
 }
 
-fun AnimalConfig.randomGenotype() = Genotype(generateSequence { GENE_RANGE.random() }
+internal fun AnimalConfig.randomGenotype() = Genotype(generateSequence { GENE_RANGE.random() }
     .take(genotypeSize).toList())
 
-fun Animal.breed(parent2: Animal): Animal {
+internal fun Animal.breed(parent2: Animal): Animal {
     val parent1 = this
     with(parent1.config) {
         if (parent1.canBreed && parent2.canBreed)
@@ -34,7 +34,8 @@ fun Animal.breed(parent2: Animal): Animal {
                 config = this,
                 position = parent1.position,
                 genotype = genotypeOfParents(parent1, parent2),
-                energy = 2 * energyGivenToNewborn
+                energy = 2 * energyGivenToNewborn,
+                birthDay = parent1.birthDay + parent1.age
             )
         else
             throw IllegalStateException(
@@ -44,17 +45,17 @@ fun Animal.breed(parent2: Animal): Animal {
     }
 }
 
-fun Animal.afterDay() = this.copy(
+internal fun Animal.afterDay() = this.copy(
     age = age + 1,
     energy = energy - config.energyConsumedEachDay
 )
 
-fun Animal.rotate(): Animal {
+internal fun Animal.rotate(): Animal {
     val rotation = genotype[age]
     return this.copy(direction = direction + rotation)
 }
 
-fun Animal.afterBreeding(): Animal {
+internal fun Animal.afterBreeding(): Animal {
     if (!this.canBreed)
         throw IllegalStateException("Attempted to breed animal of ID $id, but it is unable to do so")
     return this.copy(energy = energy - config.energyGivenToNewborn)

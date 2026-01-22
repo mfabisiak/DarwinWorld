@@ -1,4 +1,5 @@
 package io.github.mfabisiak.darwinworld.model
+
 import io.github.mfabisiak.darwinworld.model.Direction.*
 
 data class Position(val x: Int, val y: Int) {
@@ -19,16 +20,16 @@ data class Position(val x: Int, val y: Int) {
 
 }
 
-fun Direction.movement(): Position = when(this) {
-        NORTH -> Position(0, 1)
-        NORTH_EAST -> Position(1, 1)
-        EAST -> Position(1, 0)
-        SOUTH_EAST -> Position(1, -1)
-        SOUTH -> Position(0, -1)
-        SOUTH_WEST -> Position(-1, -1)
-        WEST -> Position(-1,0)
-        NORTH_WEST -> Position(-1, 1)
-    }
+internal fun Direction.movement(): Position = when (this) {
+    NORTH -> Position(0, 1)
+    NORTH_EAST -> Position(1, 1)
+    EAST -> Position(1, 0)
+    SOUTH_EAST -> Position(1, -1)
+    SOUTH -> Position(0, -1)
+    SOUTH_WEST -> Position(-1, -1)
+    WEST -> Position(-1, 0)
+    NORTH_WEST -> Position(-1, 1)
+}
 
 
 class PositionClosedRange(val start: Position, val end: Position) : Iterable<Position> {
@@ -42,9 +43,9 @@ class PositionClosedRange(val start: Position, val end: Position) : Iterable<Pos
 
     operator fun contains(position: Position) = position follows start && position precedes end
 
-    fun random() = this.toSet().random()
+    internal fun random() = this.toSet().random()
 
-    fun random(n: Int) = this.toSet().shuffled().take(n)
+    internal fun random(n: Int) = this.toSet().shuffled().take(n)
 
     private class Vector2dIterator(val start: Position, val end: Position) : Iterator<Position> {
         private var current = start
