@@ -6,6 +6,7 @@ import io.github.mfabisiak.darwinworld.logic.model.map.utils.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
+private const val MAX_HISTORY_SIZE = 1000
 class Simulation(config: SimulationConfig) {
 
     private val _state: MutableStateFlow<SimulationState> =
@@ -19,6 +20,10 @@ class Simulation(config: SimulationConfig) {
 
     private val currentDay
         get() = _state.value.day
+
+    private val history: ArrayDeque<SimulationState> = ArrayDeque()
+
+    private val poppedHistory: MutableList<SimulationState> = mutableListOf()
 
     init {
         val animalsPositions = config.boundary.random(config.numberOfAnimals)
@@ -35,16 +40,30 @@ class Simulation(config: SimulationConfig) {
     }
 
     fun simulateDay() {
-        val newMap = currentMap
-            .removeDead()
-            .rotateAnimals()
-            .moveAnimals()
-            .eatPlants()
-            .breedAnimals()
-            .spawnPlants()
-            .endDay()
+        if (history.size >= MAX_HISTORY_SIZE) history.removeFirst()
 
-        updateState(newMap)
+        history.add(_state.value)
+
+        if (poppedHistory.isEmpty()) {
+            val newMap = currentMap
+                .removeDead()
+                .rotateAnimals()
+                .moveAnimals()
+                .eatPlants()
+                .breedAnimals()
+                .spawnPlants()
+                .endDay()
+            updateState(newMap)
+        } else {
+            _state.value = poppedHistory.removeLast()
+        }
+    }
+
+    fun undo() {
+        if (history.isNotEmpty()) {
+            poppedHistory.add(_state.value)
+            _state.value = history.removeLast()
+        }
     }
 
 }
