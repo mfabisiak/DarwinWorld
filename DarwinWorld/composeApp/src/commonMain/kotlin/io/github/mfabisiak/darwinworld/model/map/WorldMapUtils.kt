@@ -3,8 +3,14 @@ package io.github.mfabisiak.darwinworld.model.map
 import io.github.mfabisiak.darwinworld.model.Position
 import io.github.mfabisiak.darwinworld.model.animal.*
 import io.github.mfabisiak.darwinworld.model.movement
+import kotlin.math.max
 import kotlin.math.min
 import kotlin.random.Random
+
+data class MoveResult(
+    val animal: Animal,
+    val trampledPlants: Set<Position>
+)
 
 fun Animals.update(newAnimal: Animal): Animals {
     return this.put(newAnimal.id, newAnimal)
@@ -49,12 +55,29 @@ fun WorldMap.rotateAnimals(): WorldMap {
 }
 
 fun WorldMap.moveAnimals(): WorldMap {
-    val newAnimals = animals.values
-        .fold(animals) { currentAnimals, animal ->
-            currentAnimals.update(moveAnimal(animal))
-        }
 
-    return this.copy(animals = newAnimals)
+    val occupiedPositions = if (config.fastAnimalsEnabled) {
+        animals.values.map { it.position }.toSet()
+    } else {
+        emptySet()
+    }
+
+    val moveResults = animals.values.map { animal ->
+        if (config.fastAnimalsEnabled) {
+            moveAnimalFast(animal, occupiedPositions)
+        } else {
+            MoveResult(moveAnimal(animal), emptySet())
+        }
+    }
+
+    val newAnimals = moveResults.fold(animals) { currentAnimals, result ->
+        currentAnimals.update(result.animal)
+    }
+
+    val allTrampledPlants = moveResults.flatMap { it.trampledPlants }.toSet()
+    val newPlants = plants.removeAll(allTrampledPlants)
+
+    return this.copy(animals = newAnimals, plants = newPlants)
 }
 
 fun WorldMap.removeDead(): WorldMap {
@@ -161,3 +184,39 @@ private fun WorldMap.moveAnimal(animal: Animal): Animal {
 }
 
 private fun Animal.move() = position + direction.movement()
+
+private fun WorldMap.moveAnimalFast(
+    animal: Animal,
+    occupiedPositions: Set<Position>
+): MoveResult {
+
+    val extraSteps = (animal.energy - config.energyRequiredToMoveFast) / config.energyPerExtraStep
+    val currentRange = min(config.maxRange, 1 + max(0, extraSteps))
+
+    var currentAnimal = animal
+    val trampledPlants = mutableSetOf<Position>()
+    var collision = false
+
+    for (step in 1..currentRange) {
+
+        val movedAnimal = moveAnimal(currentAnimal)
+        val nextPosition = movedAnimal.position
+
+        if (nextPosition in occupiedPositions && nextPosition != animal.position) {
+            collision = true
+            currentAnimal = movedAnimal
+            break
+        }
+
+        if (step < currentRange && nextPosition in plants) {
+            trampledPlants.add(nextPosition)
+        }
+
+        currentAnimal = movedAnimal
+    }
+
+    val energyPenalty = if (collision) config.energyConsumedEachDay else 0
+    val finalEnergy = max(0, currentAnimal.energy - energyPenalty)
+
+    return MoveResult(currentAnimal.copy(energy = finalEnergy), trampledPlants)
+}
