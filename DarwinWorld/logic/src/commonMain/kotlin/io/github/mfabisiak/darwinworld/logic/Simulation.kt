@@ -5,36 +5,37 @@ import io.github.mfabisiak.darwinworld.logic.model.map.WorldMap
 import io.github.mfabisiak.darwinworld.logic.model.map.utils.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 
 class Simulation(config: SimulationConfig) {
 
-    private val _worldMap: MutableStateFlow<WorldMap> = MutableStateFlow(WorldMap(config))
+    private val _state: MutableStateFlow<SimulationState> =
+        MutableStateFlow(SimulationState(WorldMap(config), 0))
 
-    private val _day: MutableStateFlow<Int> = MutableStateFlow(0)
+    val state
+        get() = _state.asStateFlow()
 
-    val worldMap
-        get() = _worldMap.asStateFlow()
+    private val currentMap
+        get() = _state.value.worldMap
 
-    val day
-        get() = _day.asStateFlow()
+    private val currentDay
+        get() = _state.value.day
 
     init {
         val animalsPositions = config.boundary.random(config.numberOfAnimals)
 
-        val initialMap = _worldMap.value
+        val initialMap = currentMap
             .spawnPlants(config.numberOfPlants)
             .placeAnimals(animalsPositions)
 
-        updateMapState(initialMap)
+        updateState(initialMap, 0)
     }
 
-    private fun updateMapState(newWorldMap: WorldMap) {
-        _worldMap.update { newWorldMap }
+    private fun updateState(newWorldMap: WorldMap, day: Int = currentDay + 1) {
+        _state.value = SimulationState(newWorldMap, day)
     }
 
     fun simulateDay() {
-        val newMap = _worldMap.value
+        val newMap = currentMap
             .removeDead()
             .rotateAnimals()
             .moveAnimals()
@@ -43,9 +44,9 @@ class Simulation(config: SimulationConfig) {
             .spawnPlants()
             .endDay()
 
-        updateMapState(newMap)
-
-        _day.value += 1
+        updateState(newMap)
     }
 
 }
+
+data class SimulationState(val worldMap: WorldMap, val day: Int)
