@@ -2,8 +2,8 @@ package io.github.mfabisiak.darwinworld.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.*
-import io.github.mfabisiak.darwinworld.Simulation
-import io.github.mfabisiak.darwinworld.config.SimulationConfig
+import io.github.mfabisiak.darwinworld.logic.Simulation
+import io.github.mfabisiak.darwinworld.logic.config.SimulationConfig
 import io.github.mfabisiak.darwinworld.ui.components.MapVisualizer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
