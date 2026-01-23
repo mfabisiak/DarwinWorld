@@ -25,7 +25,13 @@ private fun WorldMap.eatPlant(animalsAtPosition: Collection<Animal>): WorldMap {
             .thenBy { it.childrenIds.size })
 
 
-    val newAnimals = animals.update(animal.copy(energy = animal.energy + config.energyFromSinglePlant))
+    val newAnimals =
+        animals.update(
+            animal.copy(
+                energy = animal.energy + config.energyFromSinglePlant,
+                eatenPlants = animal.eatenPlants + 1
+            )
+        )
 
     val newPlants = plants.remove(position)
 

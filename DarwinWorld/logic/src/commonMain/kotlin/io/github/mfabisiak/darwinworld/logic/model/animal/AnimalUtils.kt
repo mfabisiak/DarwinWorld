@@ -16,7 +16,9 @@ internal fun AnimalConfig.genotypeOfParents(parent1: Animal, parent2: Animal): G
         leftParent.genotype.genes.take(divisionIndex),
         rightParent.genotype.genes.takeLast(genotypeSize - divisionIndex)
     ).flatten().mapIndexed { index, gene ->
-        if (index in mutatingGenes) GENE_RANGE.random(random) else gene
+        if (index in mutatingGenes) {
+            GENE_RANGE.filter { it != gene }.random(random)
+        } else gene
     }
 
     return Genotype(genesList, random)
@@ -54,9 +56,12 @@ internal fun Animal.rotate(): Animal {
     return this.copy(direction = direction + rotation)
 }
 
-internal fun Animal.afterBreeding(): Animal {
+internal fun Animal.afterBreeding(childId: String): Animal {
     if (!this.canBreed)
         throw IllegalStateException("Attempted to breed animal of ID $id, but it is unable to do so")
-    return this.copy(energy = energy - config.energyGivenToNewborn)
+    return this.copy(
+        energy = energy - config.energyGivenToNewborn,
+        childrenIds = childrenIds.add(childId)
+    )
 }
 
