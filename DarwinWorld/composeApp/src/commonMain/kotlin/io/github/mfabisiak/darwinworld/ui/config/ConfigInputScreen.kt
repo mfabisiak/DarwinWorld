@@ -11,19 +11,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.mfabisiak.darwinworld.config.ConfigBuilder
+import io.github.mfabisiak.darwinworld.files.rememberFileSaver
 import io.github.mfabisiak.darwinworld.ui.config.components.AnimalSection
 import io.github.mfabisiak.darwinworld.ui.config.components.MapSection
 import io.github.mfabisiak.darwinworld.ui.config.components.SimulationSection
 import io.github.mfabisiak.darwinworld.ui.utils.launchSimulation
+import kotlinx.serialization.json.Json
 
 @Composable
 fun ConfigInputScreen() {
     val config = remember { ConfigBuilder() }
+    val saver = rememberFileSaver()
 
-    BoxWithConstraints(modifier = Modifier
-        .fillMaxSize()
-        .padding(horizontal = 32.dp, vertical = 16.dp),
-        ){
+    BoxWithConstraints(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 32.dp, vertical = 16.dp),
+    ) {
         val isWideScreen = this.maxWidth > 750.dp
 
         Column(
@@ -61,11 +65,21 @@ fun ConfigInputScreen() {
                 }
 
             }
+            Row(modifier = Modifier.padding(10.dp)) {
+                Button(
+                    onClick = { launchSimulation(config) }
+                ) {
+                    Text("Uruchom Aplikację")
+                }
+                Button(onClick = {
+                    saver.save(
+                        "Config", "json",
+                        Json.encodeToString(config.toSerializableConfig())
+                    )
+                }) {
+                    Text("Zapisz konfigurację")
+                }
 
-            Button(
-                onClick = { launchSimulation(config) }
-            ) {
-                Text("Uruchom Aplikację")
             }
         }
     }
