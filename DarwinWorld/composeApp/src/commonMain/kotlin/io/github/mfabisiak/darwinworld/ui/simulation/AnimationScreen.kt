@@ -1,6 +1,8 @@
 package io.github.mfabisiak.darwinworld.ui.simulation
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -10,6 +12,7 @@ import io.github.mfabisiak.darwinworld.files.rememberFileSaver
 import io.github.mfabisiak.darwinworld.logic.config.SimulationConfig
 import io.github.mfabisiak.darwinworld.statistics.getDayStatistics
 import io.github.mfabisiak.darwinworld.ui.simulation.components.MapVisualizer
+import io.github.mfabisiak.darwinworld.ui.simulation.components.StatisticsContent
 import io.github.mfabisiak.darwinworld.viewmodel.SimulationViewModel
 
 @Composable
@@ -24,6 +27,8 @@ fun AnimationScreen(config: SimulationConfig) {
     val simulationState by viewModel.simulationState.collectAsState()
 
     val stats = getDayStatistics(simulationState)
+
+
 
     LaunchedEffect(isRunning) {
         if (isRunning) {
@@ -45,35 +50,56 @@ fun AnimationScreen(config: SimulationConfig) {
             }
             Button(enabled = !isRunning, onClick = { viewModel.next() }) { Text("Następny") }
         }
-        Row(modifier = Modifier.fillMaxSize()) {
-            Box(modifier = Modifier.weight(1f)) {
-                MapVisualizer(simulationState.worldMap, config.upperBound.y + 1, config.upperBound.x + 1)
-            }
+        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+            val isWideScreen = maxWidth > 600.dp
 
-            Column(
-                modifier = Modifier
-                    .width(250.dp)
-            ) {
-                Text("Dzień: ${stats.currentDay}")
-                Text("Zwierzaki: ${stats.totalAnimals}")
-                Text("Rośliny: ${stats.totalPlants}")
-                Text("Wolne pola: ${stats.freeAreas}")
-                Text("Średnia Energia: ${stats.energy}")
-                Text("Średnia długość życia: ${stats.age}")
-                Text("Średnia ilość Dzieci: ${stats.children}")
-                Text("Genotypy: ${stats.popularGenotypes}")
-                Button(onClick = {
-                    fileSaver.save(
-                        "Statistics-${config.id}",
-                        "csv",
-                        viewModel.getStatisticsCsv()
-                    )
-                }) {
-                    Text("Zapisz statystyki do CSV")
+            if (isWideScreen) {
+                Row(modifier = Modifier.fillMaxSize()) {
+                    Box(modifier = Modifier.weight(1f).fillMaxHeight()) {
+                        MapVisualizer(
+                            simulationState.worldMap,
+                            config.upperBound.y + 1,
+                            config.upperBound.x + 1
+                        )
+                    }
+
+                    Column(
+                        modifier = Modifier
+                            .width(250.dp)
+                            .fillMaxHeight()
+                            .padding(start = 16.dp)
+                            .verticalScroll(rememberScrollState()),
+                        verticalArrangement = Arrangement.SpaceAround
+                    ) {
+                        StatisticsContent(stats, config, fileSaver, viewModel)
+                    }
+                }
+            } else {
+                Column(
+                    Modifier.fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(top = 16.dp)
+                ) {
+                    Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                        MapVisualizer(
+                            simulationState.worldMap,
+                            config.upperBound.y + 1,
+                            config.upperBound.x + 1
+                        )
+                    }
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 16.dp)
+                    ) {
+                        StatisticsContent(stats, config, fileSaver, viewModel)
+                    }
                 }
             }
         }
-
     }
 
 }
+
+

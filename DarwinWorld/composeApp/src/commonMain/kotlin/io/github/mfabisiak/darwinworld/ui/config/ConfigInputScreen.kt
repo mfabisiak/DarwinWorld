@@ -43,7 +43,7 @@ fun ConfigInputScreen() {
                 if (isWideScreen) {
                     Row(
                         modifier = Modifier
-                            .fillMaxWidth()
+                            .fillMaxSize()
                             .verticalScroll(rememberScrollState()),
 
                         ) {
@@ -68,7 +68,7 @@ fun ConfigInputScreen() {
                 }
 
             }
-            Row(modifier = Modifier.padding(10.dp)) {
+            FlowRow(modifier = Modifier.padding(10.dp)) {
                 Button(
                     onClick = { launchSimulation(config) }
                 ) {
