@@ -5,11 +5,11 @@ import kotlin.random.Random
 
 val GENE_RANGE = 0..7
 
-class Genotype(genesList: List<Int>) {
+class Genotype(genesList: List<Int>, random: Random = Random) {
 
     val genes = CircularList(genesList)
 
-    private val firstDayGene = Random.nextInt(genes.size)
+    private val firstDayGene = random.nextInt(genes.size)
 
     operator fun get(day: Int) = genes[firstDayGene + day]
 }

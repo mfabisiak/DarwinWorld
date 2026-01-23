@@ -1,7 +1,10 @@
 package io.github.mfabisiak.darwinworld
 
+import androidx.compose.runtime.key
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import io.github.mfabisiak.darwinworld.ui.simulation.AnimationScreen
+import io.github.mfabisiak.darwinworld.ui.utils.WindowManager
 
 fun main() = application {
     Window(
@@ -9,5 +12,13 @@ fun main() = application {
         title = "darwinworld",
     ) {
         App()
+    }
+
+    for ((id, config) in WindowManager.openWindows) {
+        key(id) {
+            Window(title = "Simulation $id", onCloseRequest = { WindowManager.closeSimulation(id) }) {
+                AnimationScreen(config)
+            }
+        }
     }
 }

@@ -63,8 +63,13 @@ private fun WorldMap.moveAnimalFast(
     occupiedPositions: Set<Position>
 ): MoveResult {
 
-    val extraSteps = (animal.energy - config.energyRequiredToMoveFast) / config.energyPerExtraStep
-    val currentRange = min(config.maxRange, 1 + max(0, extraSteps))
+
+    val currentRange = if (config.energyPerExtraStep > 0) {
+        val extraSteps = (animal.energy - config.energyRequiredToMoveFast) / config.energyPerExtraStep
+        min(config.maxRange, 1 + max(0, extraSteps))
+    } else {
+        config.maxRange
+    }
 
     var currentAnimal = animal
     val trampledPlants = mutableSetOf<Position>()

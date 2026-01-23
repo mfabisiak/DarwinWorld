@@ -7,14 +7,15 @@ import kotlin.random.Random
 
 private fun randomPlantPosition(
     availableJunglePositions: MutableSet<Position>,
-    availableSteppePositions: MutableSet<Position>
+    availableSteppePositions: MutableSet<Position>,
+    random: Random = Random
 ): Position? {
     val inJungle = Random.nextDouble() < 0.8
 
     val chosenPosition = if (inJungle) {
-        availableJunglePositions.randomOrNull() ?: availableSteppePositions.randomOrNull()
+        availableJunglePositions.randomOrNull(random) ?: availableSteppePositions.randomOrNull(random)
     } else {
-        availableSteppePositions.randomOrNull() ?: availableJunglePositions.randomOrNull()
+        availableSteppePositions.randomOrNull(random) ?: availableJunglePositions.randomOrNull(random)
     }
 
     availableJunglePositions.remove(chosenPosition)
@@ -27,7 +28,9 @@ internal fun WorldMap.spawnPlants(n: Int = config.plantsGrowingEachDay): WorldMa
     val availableJunglePositions = (config.jungle.toSet() - plants).toMutableSet()
     val availableSteppePositions = (config.boundary.toSet() - config.jungle.toSet() - plants).toMutableSet()
 
-    val plantsToAdd = generateSequence { randomPlantPosition(availableJunglePositions, availableSteppePositions) }
+    val plantsToAdd = generateSequence {
+        randomPlantPosition(availableJunglePositions, availableSteppePositions, config.random)
+    }
         .take(min(n, availableSteppePositions.size + availableJunglePositions.size))
         .toList()
 
