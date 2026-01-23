@@ -31,6 +31,8 @@ kotlin {
         binaries.executable()
     }
 
+    applyDefaultHierarchyTemplate()
+
     sourceSets {
         androidMain.dependencies {
             implementation(compose.preview)
@@ -58,7 +60,6 @@ kotlin {
         }
         webMain.dependencies {
             implementation(libs.kotlinx.browser)
-            implementation(libs.kotlin.stdlib.wasm.js)
         }
     }
 }
