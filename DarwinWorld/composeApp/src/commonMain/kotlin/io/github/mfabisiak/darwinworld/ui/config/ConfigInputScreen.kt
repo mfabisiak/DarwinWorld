@@ -63,7 +63,7 @@ fun ConfigInputScreen() {
             }
 
             Button(
-                onClick = { launchSimulation(config.build()) }
+                onClick = { launchSimulation(config) }
             ) {
                 Text("Uruchom Aplikację")
             }

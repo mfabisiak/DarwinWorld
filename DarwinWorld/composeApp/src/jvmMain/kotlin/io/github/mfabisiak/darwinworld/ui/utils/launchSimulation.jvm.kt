@@ -1,6 +1,7 @@
 package io.github.mfabisiak.darwinworld.ui.utils
 
 import androidx.compose.runtime.mutableStateMapOf
+import io.github.mfabisiak.darwinworld.config.ConfigBuilder
 import io.github.mfabisiak.darwinworld.logic.config.SimulationConfig
 
 
@@ -16,6 +17,6 @@ object WindowManager {
     }
 }
 
-actual fun launchSimulation(config: SimulationConfig) {
-    WindowManager.launchSimulation(config)
+actual fun launchSimulation(config: ConfigBuilder) {
+    WindowManager.launchSimulation(config.build())
 }
