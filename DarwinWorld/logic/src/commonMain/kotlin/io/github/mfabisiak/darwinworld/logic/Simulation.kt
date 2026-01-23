@@ -26,7 +26,7 @@ class Simulation(config: SimulationConfig) {
     private val poppedHistory: MutableList<SimulationState> = mutableListOf()
 
     init {
-        val animalsPositions = config.boundary.random(config.numberOfAnimals)
+        val animalsPositions = config.boundary.random(config.numberOfAnimals, config.random)
 
         val initialMap = currentMap
             .spawnPlants(config.numberOfPlants)

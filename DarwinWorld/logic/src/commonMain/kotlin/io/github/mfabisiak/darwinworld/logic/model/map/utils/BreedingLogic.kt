@@ -5,16 +5,17 @@ import io.github.mfabisiak.darwinworld.logic.model.animal.afterBreeding
 import io.github.mfabisiak.darwinworld.logic.model.animal.breed
 import io.github.mfabisiak.darwinworld.logic.model.map.Animals
 import io.github.mfabisiak.darwinworld.logic.model.map.WorldMap
+import kotlin.random.Random
 
-internal fun WorldMap.breedAnimals() = this.copy(animals = animals.breed())
+internal fun WorldMap.breedAnimals() = this.copy(animals = animals.breed(config.random))
 
-private fun Animals.breed() = this.values
+private fun Animals.breed(random: Random = Random) = this.values
     .filter { it.canBreed }
     .groupBy { it.position }
     .values
     .filter { it.size >= 2 }
     .map { animalsAtPosition ->
-        animalsAtPosition.shuffled()
+        animalsAtPosition.shuffled(random)
             .sortedWith(compareBy<Animal> { it.energy }
                 .thenBy { it.age }
                 .thenBy { it.childrenIds.size })
