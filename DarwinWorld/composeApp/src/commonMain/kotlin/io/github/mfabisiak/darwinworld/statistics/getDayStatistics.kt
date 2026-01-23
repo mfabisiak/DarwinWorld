@@ -2,7 +2,7 @@ package io.github.mfabisiak.darwinworld.statistics
 
 import io.github.mfabisiak.darwinworld.logic.SimulationState
 
-fun CalculateStatistics(simulationState: SimulationState): SimulationStatistics {
+fun getDayStatistics(simulationState: SimulationState): DayStatistics {
 
     val worldMap = simulationState.worldMap
 
@@ -54,7 +54,7 @@ fun CalculateStatistics(simulationState: SimulationState): SimulationStatistics 
         .map { it.genotype }
         .firstOrNull { it.genes.actualList == topGenes }
 
-    return SimulationStatistics(
+    return DayStatistics(
         currentDay,
         totalAnimals,
         totalPlants,

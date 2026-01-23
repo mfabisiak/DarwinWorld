@@ -3,7 +3,7 @@ package io.github.mfabisiak.darwinworld.statistics
 import io.github.mfabisiak.darwinworld.logic.model.animal.Genotype
 import kotlin.math.round
 
-data class SimulationStatistics(
+data class DayStatistics(
     val currentDay: Int,
     val totalAnimals: Int,
     val totalPlants: Int,
@@ -24,7 +24,7 @@ data class SimulationStatistics(
 
     companion object {
         const val CSV_HEADER =
-            "Dzień;LiczbaZwierząt;LiczbaRoślin;LiczbaWolnychPól;ŚredniaEnergia;ŚredniaDługośćZycia;ŚredniaIlośćDzieci;Genotypy"
+            "Dzien;LiczbaZwierzat;LiczbaRoslin;LiczbaWolnychPol;SredniaEnergia;SredniaDlugoscZycia;SredniaIloscDzieci;Genotypy"
     }
 
 }
