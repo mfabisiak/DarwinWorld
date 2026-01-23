@@ -2,6 +2,7 @@ package io.github.mfabisiak.darwinworld.config
 
 import io.github.mfabisiak.darwinworld.logic.config.SimulationConfig
 import io.github.mfabisiak.darwinworld.logic.model.Position
+import kotlin.random.Random
 
 data class ProductionConfig(
     override val numberOfPlants: Int = 5,
@@ -26,7 +27,8 @@ data class ProductionConfig(
     override val energyRequiredToMoveFast: Int = 20,
     override val energyPerExtraStep: Int = 5,
     override val maxRange: Int = 1,
-    val fastAnimalsEnabled: Boolean = false
+    val fastAnimalsEnabled: Boolean = false,
+    val randomSeed: Int
 ) : SimulationConfig {
 
     override val jungle = let {
@@ -43,4 +45,6 @@ data class ProductionConfig(
 
         jungleLowerBound..jungleUpperBound
     }
+
+    override val random = Random(randomSeed)
 }

@@ -14,7 +14,7 @@ data class Animal(
     val position: Position,
     val genotype: Genotype = config.randomGenotype(),
     val energy: Int = config.initialEnergy,
-    val direction: Direction = Direction.random(),
+    val direction: Direction = Direction.random(config.random),
     val age: Int = 0,
     val id: String = Uuid.random().toString(),
     val childrenIds: PersistentSet<String> = persistentSetOf(),
