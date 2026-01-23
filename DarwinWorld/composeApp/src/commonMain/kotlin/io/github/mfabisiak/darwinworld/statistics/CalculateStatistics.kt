@@ -44,6 +44,15 @@ fun CalculateStatistics(simulationState: SimulationState): SimulationStatistics 
             val genesString = x.key.genes.joinToString(" ")
             "[$genesString] (${x.value})"
         }
+    val topGenes = worldMap.animals.values
+        .groupingBy { it.genotype.genes.actualList }
+        .eachCount()
+        .maxByOrNull { it.value }
+        ?.key
+
+    val topGenotype = worldMap.animals.values
+        .map { it.genotype }
+        .firstOrNull { it.genes.actualList == topGenes }
 
     return SimulationStatistics(
         currentDay,
@@ -53,6 +62,7 @@ fun CalculateStatistics(simulationState: SimulationState): SimulationStatistics 
         averageEnergy,
         averageAgeForDeadAnimals,
         averageNumberOfChildren,
-        popularGenotypes
+        popularGenotypes,
+        topGenotype
     )
 }
