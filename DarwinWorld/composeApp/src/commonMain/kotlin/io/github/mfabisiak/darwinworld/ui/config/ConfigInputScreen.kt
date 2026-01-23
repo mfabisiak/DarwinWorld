@@ -10,8 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.github.mfabisiak.darwinworld.config.ConfigBuilder
-import io.github.mfabisiak.darwinworld.config.SerializableConfig
+import io.github.mfabisiak.darwinworld.config.*
 import io.github.mfabisiak.darwinworld.files.rememberFileLoader
 import io.github.mfabisiak.darwinworld.files.rememberFileSaver
 import io.github.mfabisiak.darwinworld.ui.config.components.AnimalSection
@@ -32,13 +31,36 @@ fun ConfigInputScreen() {
             .padding(horizontal = 32.dp, vertical = 16.dp),
     ) {
         val isWideScreen = this.maxWidth > 750.dp
-
         Column(
             modifier = Modifier
                 .fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            FlowRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 10.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Button(onClick = { config.fromSerializableConfig(CLASSIC_CONFIG) }) {
+                    Text("Klasyczny")
+                }
+
+                Button(onClick = { config.fromSerializableConfig(DESERT_CONFIG) }) {
+                    Text("Pustynia")
+                }
+
+                Button(onClick = { config.fromSerializableConfig(FULL_OF_PLANTS_CONFIG) }) {
+                    Text("Dużo roślin")
+                }
+
+                Button(onClick = { config.fromSerializableConfig(FAST_ANIMALS_CONFIG) }) {
+                    Text("Szybkie zwierzaki")
+                }
+            }
+
             Box(modifier = Modifier.weight(1f)) {
                 if (isWideScreen) {
                     Row(
@@ -68,7 +90,7 @@ fun ConfigInputScreen() {
                 }
 
             }
-            FlowRow(modifier = Modifier.padding(10.dp)) {
+            FlowRow(modifier = Modifier.padding(10.dp), horizontalArrangement = Arrangement.Center) {
                 Button(
                     onClick = { launchSimulation(config) }
                 ) {

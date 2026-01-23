@@ -16,19 +16,27 @@ fun SimulationSection(config: ConfigBuilder) {
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
         )
-        ConfigInput("Liczba roślin:", config.numberOfPlants) {
+        ConfigInput(
+            "Liczba roślin:", config.numberOfPlants,
+            condition = { it >= 0 }) {
             config.numberOfPlants = it
         }
 
-        ConfigInput("Liczba roślin rosnących codziennie:", config.plantsGrowingEachDay) {
+        ConfigInput(
+            "Liczba roślin rosnących codziennie:", config.plantsGrowingEachDay,
+            condition = { it >= 0 }) {
             config.plantsGrowingEachDay = it
         }
 
-        ConfigInput("Liczba zwierząt:", config.numberOfAnimals) {
+        ConfigInput(
+            "Liczba zwierząt:", config.numberOfAnimals,
+            condition = { it >= 0 && it <= config.mapWidth * config.mapHeight }) {
             config.numberOfAnimals = it
         }
 
-        ConfigInput("Seed losowania", config.randomSeed) {
+        ConfigInput(
+            "Seed losowania", config.randomSeed,
+            condition = { it > 0 }) {
             config.randomSeed = it
         }
     }

@@ -9,13 +9,18 @@ fun ConfigInput(
     label: String,
     value: Int,
     isVisible: Boolean = true,
+    condition: (Int) -> Boolean = { _ -> true },
     sendOnChange: (Int) -> Unit,
 ){
     if (isVisible) OutlinedTextField(
         value = value.toString(),
         onValueChange = { text ->
-            val digits = text.filter { it.isDigit() }
-            sendOnChange(digits.toIntOrNull() ?: 0)
+            text.toIntOrNull()
+                ?.let {
+                    if (condition(it)) sendOnChange(it)
+                    else sendOnChange(value)
+                }
+
         },
         label = { Text(label) },
         placeholder = { Text("Wpisz wartość")},

@@ -6,6 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import io.github.mfabisiak.darwinworld.config.ConfigBuilder
+import kotlin.math.max
+import kotlin.math.min
 
 @Composable
 fun AnimalSection(config: ConfigBuilder)
@@ -17,31 +19,47 @@ fun AnimalSection(config: ConfigBuilder)
                 .align(Alignment.CenterHorizontally)
         )
 
-        ConfigInput("Energia z którą startują zwierzaki:", config.initialEnergy) {
+        ConfigInput(
+            "Energia z którą startują zwierzaki:", config.initialEnergy,
+            condition = { it > 0 }) {
             config.initialEnergy = it
         }
 
-        ConfigInput("Energia tracona każdego dnia:", config.energyConsumedEachDay) {
+        ConfigInput(
+            "Energia tracona każdego dnia:", config.energyConsumedEachDay,
+            condition = { it > 0 }) {
             config.energyConsumedEachDay = it
         }
 
-        ConfigInput("Energia potrzebna do rozmnażania:", config.energyRequiredToBreed) {
+        ConfigInput(
+            "Energia potrzebna do rozmnażania:", config.energyRequiredToBreed,
+            condition = { it > 0 }) {
             config.energyRequiredToBreed = it
         }
 
-        ConfigInput("Energia przekazywana dziecku:", config.energyGivenToNewborn) {
+        ConfigInput(
+            "Energia przekazywana dziecku:", config.energyGivenToNewborn,
+            condition = { it > 0 }) {
             config.energyGivenToNewborn = it
         }
 
-        ConfigInput("Minimalna liczba mutacji:", config.minNumberOfMutations) {
+        ConfigInput(
+            "Minimalna liczba mutacji:", config.minNumberOfMutations,
+            condition = { it >= 0 }) {
             config.minNumberOfMutations = it
+            config.maxNumberOfMutations = max(it, config.maxNumberOfMutations)
         }
 
-        ConfigInput("Maksymalna liczba mutacji:", config.maxNumberOfMutations) {
+        ConfigInput(
+            "Maksymalna liczba mutacji:", config.maxNumberOfMutations,
+            condition = { it >= 0 }) {
             config.maxNumberOfMutations = it
+            config.minNumberOfMutations = min(it, config.minNumberOfMutations)
         }
 
-        ConfigInput("Długość genotypu:", config.genotypeSize) {
+        ConfigInput(
+            "Długość genotypu:", config.genotypeSize,
+            condition = { it > 0 }) {
             config.genotypeSize = it
         }
 
@@ -53,7 +71,8 @@ fun AnimalSection(config: ConfigBuilder)
         ConfigInput(
             "Energia wymagana do szybkiego ruchu:",
             config.energyRequiredToMoveFast,
-            config.fastAnimalsEnabled
+            config.fastAnimalsEnabled,
+            condition = { it > 0 }
         ) {
             config.energyRequiredToMoveFast = it
         }
@@ -61,7 +80,8 @@ fun AnimalSection(config: ConfigBuilder)
         ConfigInput(
             "Energia do przyspieszenia o kolejny poziom:",
             config.energyPerExtraStep,
-            config.fastAnimalsEnabled
+            config.fastAnimalsEnabled,
+            condition = { it > 0 }
         ) {
             config.energyPerExtraStep = it
         }
@@ -69,7 +89,8 @@ fun AnimalSection(config: ConfigBuilder)
         ConfigInput(
             "Maksymalny zasięg szybkiego ruchu:",
             config.maxRange,
-            config.fastAnimalsEnabled
+            config.fastAnimalsEnabled,
+            condition = { it > 0 }
         ) {
             config.maxRange = it
         }

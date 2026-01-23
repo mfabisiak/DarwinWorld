@@ -69,7 +69,7 @@ fun AnimationScreen(config: SimulationConfig) {
                             .fillMaxHeight()
                             .padding(start = 16.dp)
                             .verticalScroll(rememberScrollState()),
-                        verticalArrangement = Arrangement.SpaceAround
+                        verticalArrangement = Arrangement.Center
                     ) {
                         StatisticsContent(stats, config, fileSaver, viewModel)
                     }
