@@ -1,18 +1,18 @@
 package io.github.mfabisiak.darwinworld.ui.utils
 
-import androidx.compose.runtime.mutableStateSetOf
+import androidx.compose.runtime.mutableStateMapOf
 import io.github.mfabisiak.darwinworld.logic.config.SimulationConfig
 
 
 object WindowManager {
-    val openWindows = mutableStateSetOf<SimulationConfig>()
+    val openWindows = mutableStateMapOf<String, SimulationConfig>()
 
     fun launchSimulation(config: SimulationConfig) {
-        openWindows.add(config)
+        openWindows[config.id] = config
     }
 
-    fun closeSimulation(config: SimulationConfig) {
-        openWindows.remove(config)
+    fun closeSimulation(id: String) {
+        openWindows.remove(id)
     }
 }
 

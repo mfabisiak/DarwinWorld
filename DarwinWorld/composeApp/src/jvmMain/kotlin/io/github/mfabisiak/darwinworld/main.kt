@@ -14,9 +14,9 @@ fun main() = application {
         App()
     }
 
-    for (config in WindowManager.openWindows) {
-        key(config) {
-            Window(title = "Simulation", onCloseRequest = { WindowManager.closeSimulation(config) }) {
+    for ((id, config) in WindowManager.openWindows) {
+        key(id) {
+            Window(title = "Simulation $id", onCloseRequest = { WindowManager.closeSimulation(id) }) {
                 AnimationScreen(config)
             }
         }

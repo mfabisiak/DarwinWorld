@@ -3,6 +3,8 @@ package io.github.mfabisiak.darwinworld.config
 import io.github.mfabisiak.darwinworld.logic.config.SimulationConfig
 import io.github.mfabisiak.darwinworld.logic.model.Position
 import kotlin.random.Random
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class ProductionConfig(
     override val numberOfPlants: Int = 5,
@@ -55,5 +57,8 @@ class ProductionConfig(
     override val energyPerExtraStep = if (fastAnimalsEnabled) energyPerExtraStep else 0
 
     override val maxRange = if (fastAnimalsEnabled) maxRange else 1
+
+    @OptIn(ExperimentalUuidApi::class)
+    override val id = Uuid.random().toString()
 
 }
