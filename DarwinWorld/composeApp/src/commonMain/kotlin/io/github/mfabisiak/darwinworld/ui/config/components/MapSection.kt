@@ -15,15 +15,21 @@ fun MapSection(config: ConfigBuilder) {
                 .align(Alignment.CenterHorizontally)
         )
 
-        ConfigInput("Szerokość mapy:", config.mapWidth) {
+        ConfigInput(
+            "Szerokość mapy:", config.mapWidth,
+            condition = { it in 3..100 }) {
             config.mapWidth = it
         }
 
-        ConfigInput("Wysokość mapy:", config.mapHeight) {
+        ConfigInput(
+            "Wysokość mapy:", config.mapHeight,
+            condition = { it in 3..100 }) {
             config.mapHeight = it
         }
 
-        ConfigInput("Energia ze zjedzenia pojedyńczej rośliny:", config.energyFromSinglePlant) {
+        ConfigInput(
+            "Energia ze zjedzenia pojedyńczej rośliny:", config.energyFromSinglePlant,
+            condition = { it > 0 }) {
             config.energyFromSinglePlant = it
         }
     }

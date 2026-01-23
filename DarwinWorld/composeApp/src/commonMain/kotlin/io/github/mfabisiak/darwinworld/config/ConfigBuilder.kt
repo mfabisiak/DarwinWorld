@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import io.github.mfabisiak.darwinworld.logic.config.SimulationConfig
 import io.github.mfabisiak.darwinworld.logic.model.Position
+import kotlin.random.Random
 
 class ConfigBuilder {
     var numberOfPlants by mutableStateOf(5)
@@ -20,7 +21,7 @@ class ConfigBuilder {
     var mapHeight by mutableStateOf(10)
     var energyFromSinglePlant by mutableStateOf(20)
     var initialEnergy by mutableStateOf(80)
-    var randomSeed by mutableStateOf(10)
+    var randomSeed by mutableStateOf(Random.nextInt(5000))
     var energyRequiredToMoveFast by mutableStateOf(20)
     var energyPerExtraStep by mutableStateOf(5)
     var maxRange by mutableStateOf(1)
