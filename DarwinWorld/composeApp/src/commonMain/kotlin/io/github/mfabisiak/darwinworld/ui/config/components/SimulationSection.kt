@@ -30,7 +30,7 @@ fun SimulationSection(config: ConfigBuilder) {
 
         ConfigInput(
             "Liczba zwierząt:", config.numberOfAnimals,
-            condition = { it >= 0 }) {
+            condition = { it >= 0 && it <= config.mapWidth * config.mapHeight }) {
             config.numberOfAnimals = it
         }
 
