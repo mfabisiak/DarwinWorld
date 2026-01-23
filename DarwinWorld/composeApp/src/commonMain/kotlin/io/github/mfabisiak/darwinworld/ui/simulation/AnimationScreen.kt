@@ -1,33 +1,39 @@
 package io.github.mfabisiak.darwinworld.ui.simulation
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import io.github.mfabisiak.darwinworld.logic.Simulation
 import io.github.mfabisiak.darwinworld.logic.config.SimulationConfig
 import io.github.mfabisiak.darwinworld.ui.simulation.components.MapVisualizer
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.withContext
+import io.github.mfabisiak.darwinworld.viewmodel.SimulationViewModel
 
 @Composable
 fun AnimationScreen(config : SimulationConfig){
 
-    val simulation = remember { Simulation(config)}
+    val viewModel = remember { SimulationViewModel(config) }
 
-    val currentState by simulation.state.collectAsState()
+    var isRunning by remember { mutableStateOf(true) }
 
-    LaunchedEffect(Unit){
-        withContext(Dispatchers.Default) {
-            while (isActive) {
-                delay(300)
-                simulation.simulateDay()
-            }
-        }
+    val simulationState by viewModel.simulationState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.start()
     }
 
     Column {
-        MapVisualizer(currentState.worldMap, config.upperBound.y + 1, config.upperBound.x + 1)
+        Row {
+            Button(enabled = !isRunning, onClick = { viewModel.previous() }) { Text("Poprzedni") }
+            Button(onClick = {
+                if (isRunning) viewModel.stop() else viewModel.start()
+                isRunning = !isRunning
+            }) {
+                Text(if (isRunning) "STOP" else "START")
+            }
+            Button(enabled = !isRunning, onClick = { viewModel.next() }) { Text("Następny") }
+        }
+        MapVisualizer(simulationState.worldMap, config.upperBound.y + 1, config.upperBound.x + 1)
     }
 
 }
