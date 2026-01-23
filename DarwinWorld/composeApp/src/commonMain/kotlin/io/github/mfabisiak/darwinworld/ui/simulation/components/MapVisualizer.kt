@@ -26,12 +26,14 @@ import kotlin.math.min
 @Composable
 fun MapVisualizer(worldMap: WorldMap, height: Int, width: Int, topGenotype: Genotype? = null) {
 
-    fun calculateColor(animal: Animal): Color = when {
-        animal.energy > 8 * worldMap.config.energyConsumedEachDay -> Color.hsl(120f, 0.65f, 0.25f)
-        animal.energy > 6 * worldMap.config.energyConsumedEachDay -> Color.Green
-        animal.energy > 4 * worldMap.config.energyConsumedEachDay -> Color.hsl(45f, 0.8f, 0.4f)
-        animal.energy > 2 * worldMap.config.energyConsumedEachDay -> Color.hsl(55f, 0.9f, 0.65f)
-        else -> Color.Red
+    fun calculateColor(animal: Animal): Color = with(worldMap.config) {
+        when {
+            animal.energy > 8 * energyConsumedEachDay -> Color.hsl(120f, 0.65f, 0.25f)
+            animal.energy > 6 * energyConsumedEachDay -> Color.Green
+            animal.energy > 4 * energyConsumedEachDay -> Color.hsl(45f, 0.8f, 0.4f)
+            animal.energy > 2 * energyConsumedEachDay -> Color.hsl(55f, 0.9f, 0.65f)
+            else -> Color.Red
+        }
     }
 
     val animalDrawables = listOf(

@@ -6,24 +6,24 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import io.github.mfabisiak.darwinworld.files.rememberFileSaver
 import io.github.mfabisiak.darwinworld.logic.config.SimulationConfig
-import io.github.mfabisiak.darwinworld.statistics.CalculateStatistics
-import io.github.mfabisiak.darwinworld.statistics.createStatisticsSaver
+import io.github.mfabisiak.darwinworld.statistics.getDayStatistics
 import io.github.mfabisiak.darwinworld.ui.simulation.components.MapVisualizer
 import io.github.mfabisiak.darwinworld.viewmodel.SimulationViewModel
 
 @Composable
 fun AnimationScreen(config: SimulationConfig) {
 
-    val saver = remember { createStatisticsSaver() }
+    val fileSaver = rememberFileSaver()
 
-    val viewModel = remember { SimulationViewModel(config, saver) }
+    val viewModel = remember { SimulationViewModel(config) }
 
     var isRunning by remember { mutableStateOf(true) }
 
     val simulationState by viewModel.simulationState.collectAsState()
 
-    val stats = CalculateStatistics(simulationState)
+    val stats = getDayStatistics(simulationState)
 
     LaunchedEffect(Unit) {
         viewModel.start()
@@ -63,8 +63,18 @@ fun AnimationScreen(config: SimulationConfig) {
                 Text("Średnia długość życia: ${stats.age}")
                 Text("Średnia ilość Dzieci: ${stats.children}")
                 Text("Genotypy: ${stats.popularGenotypes}")
+                Button(onClick = {
+                    fileSaver.save(
+                        "Statistics-${config.id}",
+                        "csv",
+                        viewModel.getStatisticsCsv()
+                    )
+                }) {
+                    Text("Zapisz statystyki do CSV")
+                }
             }
         }
+
     }
 
 }
