@@ -11,6 +11,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.mfabisiak.darwinworld.config.ConfigBuilder
+import io.github.mfabisiak.darwinworld.config.SerializableConfig
+import io.github.mfabisiak.darwinworld.files.rememberFileLoader
 import io.github.mfabisiak.darwinworld.files.rememberFileSaver
 import io.github.mfabisiak.darwinworld.ui.config.components.AnimalSection
 import io.github.mfabisiak.darwinworld.ui.config.components.MapSection
@@ -21,7 +23,8 @@ import kotlinx.serialization.json.Json
 @Composable
 fun ConfigInputScreen() {
     val config = remember { ConfigBuilder() }
-    val saver = rememberFileSaver()
+    val fileSaver = rememberFileSaver()
+    val fileLoader = rememberFileLoader()
 
     BoxWithConstraints(
         modifier = Modifier
@@ -71,13 +74,28 @@ fun ConfigInputScreen() {
                 ) {
                     Text("Uruchom Aplikację")
                 }
+
                 Button(onClick = {
-                    saver.save(
+                    fileSaver.save(
                         "Config", "json",
                         Json.encodeToString(config.toSerializableConfig())
                     )
                 }) {
                     Text("Zapisz konfigurację")
+                }
+
+                Button(onClick = {
+                    fileLoader.openFile("json") {
+                        val loadedConfig = try {
+                            Json.decodeFromString<SerializableConfig>(it)
+                        } catch (_: Exception) {
+                            return@openFile
+                        }
+
+                        config.fromSerializableConfig(loadedConfig)
+                    }
+                }) {
+                    Text("Wczytaj konfigurację")
                 }
 
             }
