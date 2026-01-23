@@ -2,7 +2,7 @@ package io.github.mfabisiak.darwinworld
 
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.ComposeViewport
-import io.github.mfabisiak.darwinworld.config.ConfigBuilder
+import io.github.mfabisiak.darwinworld.config.SerializableConfig
 import io.github.mfabisiak.darwinworld.logic.config.SimulationConfig
 import io.github.mfabisiak.darwinworld.ui.simulation.AnimationScreen
 import kotlinx.browser.window
@@ -21,7 +21,7 @@ fun main() {
         if (encodedConfig != null) {
             val config: SimulationConfig? = try {
                 val jsonString = window.atob(encodedConfig)
-                Json.decodeFromString<ConfigBuilder>(jsonString).build()
+                Json.decodeFromString<SerializableConfig>(jsonString).toSimulationConfig()
             } catch (_: IllegalArgumentException) {
                 null
             } catch (_: SerializationException) {
