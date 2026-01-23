@@ -5,9 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import io.github.mfabisiak.darwinworld.logic.config.SimulationConfig
 import io.github.mfabisiak.darwinworld.logic.model.Position
-import kotlinx.serialization.Serializable
 
-@Serializable
 class ConfigBuilder {
     var numberOfPlants by mutableStateOf(5)
     var plantsGrowingEachDay by mutableStateOf(3)
@@ -48,6 +46,27 @@ class ConfigBuilder {
         energyPerExtraStep,
         maxRange,
         fastAnimalsEnabled
+    )
+
+    fun toSerializableConfig() = SerializableConfig(
+        numberOfPlants = numberOfPlants,
+        plantsGrowingEachDay = plantsGrowingEachDay,
+        numberOfAnimals = numberOfAnimals,
+        energyConsumedEachDay = energyConsumedEachDay,
+        energyRequiredToBreed = energyRequiredToBreed,
+        energyGivenToNewborn = energyGivenToNewborn,
+        minNumberOfMutations = minNumberOfMutations,
+        maxNumberOfMutations = maxNumberOfMutations,
+        genotypeSize = genotypeSize,
+        mapWidth = mapWidth,
+        mapHeight = mapHeight,
+        energyFromSinglePlant = energyFromSinglePlant,
+        initialEnergy = initialEnergy,
+        randomSeed = randomSeed,
+        energyRequiredToMoveFast = energyRequiredToMoveFast,
+        energyPerExtraStep = energyPerExtraStep,
+        maxRange = maxRange,
+        fastAnimalsEnabled = fastAnimalsEnabled
     )
 
 }
