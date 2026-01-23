@@ -1,5 +1,6 @@
 package io.github.mfabisiak.darwinworld.statistics
 
+import io.github.mfabisiak.darwinworld.logic.model.animal.Genotype
 import kotlin.math.round
 
 data class SimulationStatistics(
@@ -10,7 +11,8 @@ data class SimulationStatistics(
     val averageEnergy: Double,
     val averageAgeForDeadAnimals: Double,
     val averageNumberOfChildren: Double,
-    val popularGenotypes: String
+    val popularGenotypes: String,
+    val topGenotype: Genotype? = null
 ) {
     val energy = round(averageEnergy * 100) / 100.0
     val age = round(averageAgeForDeadAnimals * 100) / 100.0
