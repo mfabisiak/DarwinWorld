@@ -19,7 +19,7 @@ private fun WorldMap.eatPlant(animalsAtPosition: Collection<Animal>): WorldMap {
     if (position !in plants) return this
 
     val animal = animalsAtPosition
-        .shuffled()
+        .shuffled(config.random)
         .maxWith(compareBy<Animal> { it.energy }
             .thenBy { it.age }
             .thenBy { it.childrenIds.size })

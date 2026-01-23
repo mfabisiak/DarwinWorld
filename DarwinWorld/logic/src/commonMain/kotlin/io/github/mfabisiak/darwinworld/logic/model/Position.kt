@@ -1,6 +1,7 @@
 package io.github.mfabisiak.darwinworld.logic.model
 
 import io.github.mfabisiak.darwinworld.logic.model.Direction.*
+import kotlin.random.Random
 
 data class Position(val x: Int, val y: Int) {
 
@@ -43,9 +44,7 @@ class PositionClosedRange(val start: Position, val end: Position) : Iterable<Pos
 
     operator fun contains(position: Position) = position follows start && position precedes end
 
-    internal fun random() = this.toSet().random()
-
-    internal fun random(n: Int) = this.toSet().shuffled().take(n)
+    internal fun random(n: Int, random: Random = Random) = this.toSet().shuffled(random).take(n)
 
     private class Vector2dIterator(val start: Position, val end: Position) : Iterator<Position> {
         private var current = start

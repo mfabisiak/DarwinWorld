@@ -1,30 +1,29 @@
 package io.github.mfabisiak.darwinworld.logic.model.animal
 
 import io.github.mfabisiak.darwinworld.logic.config.AnimalConfig
-import kotlin.random.Random
 
 
 internal fun AnimalConfig.genotypeOfParents(parent1: Animal, parent2: Animal): Genotype {
 
-    val (leftParent, rightParent) = setOf(parent1, parent2).shuffled()
+    val (leftParent, rightParent) = setOf(parent1, parent2).shuffled(random)
 
     val divisionIndex = genotypeSize * leftParent.energy / (leftParent.energy + rightParent.energy)
 
-    val mutatingGenes = (0..<genotypeSize).shuffled()
-        .take(Random.nextInt(minNumberOfMutations, maxNumberOfMutations + 1))
+    val mutatingGenes = (0..<genotypeSize).shuffled(random)
+        .take(random.nextInt(minNumberOfMutations, maxNumberOfMutations + 1))
 
     val genesList = listOf(
         leftParent.genotype.genes.take(divisionIndex),
         rightParent.genotype.genes.takeLast(genotypeSize - divisionIndex)
     ).flatten().mapIndexed { index, gene ->
-        if (index in mutatingGenes) GENE_RANGE.random() else gene
+        if (index in mutatingGenes) GENE_RANGE.random(random) else gene
     }
 
-    return Genotype(genesList)
+    return Genotype(genesList, random)
 }
 
-internal fun AnimalConfig.randomGenotype() = Genotype(generateSequence { GENE_RANGE.random() }
-    .take(genotypeSize).toList())
+internal fun AnimalConfig.randomGenotype() = Genotype(generateSequence { GENE_RANGE.random(random) }
+    .take(genotypeSize).toList(), random)
 
 internal fun Animal.breed(parent2: Animal): Animal {
     val parent1 = this

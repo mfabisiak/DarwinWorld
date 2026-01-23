@@ -1,6 +1,7 @@
 package io.github.mfabisiak.darwinworld.logic.model
 
 import io.github.mfabisiak.darwinworld.logic.utils.CircularList
+import kotlin.random.Random
 
 enum class Direction {
     NORTH,
@@ -13,7 +14,7 @@ enum class Direction {
     NORTH_WEST;
 
     companion object {
-        fun random() = Direction.entries.random()
+        fun random(random: Random = Random) = Direction.entries.random(random)
     }
 
 
