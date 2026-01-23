@@ -11,15 +11,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.mfabisiak.darwinworld.config.ConfigBuilder
-import io.github.mfabisiak.darwinworld.logic.config.SimulationConfig
 import io.github.mfabisiak.darwinworld.ui.config.components.AnimalSection
 import io.github.mfabisiak.darwinworld.ui.config.components.MapSection
 import io.github.mfabisiak.darwinworld.ui.config.components.SimulationSection
+import io.github.mfabisiak.darwinworld.ui.utils.launchSimulation
 
 @Composable
-fun ConfigInputScreen(
-    onSimulationStart: (SimulationConfig) -> Unit
-) {
+fun ConfigInputScreen() {
     val config = remember { ConfigBuilder() }
 
     BoxWithConstraints(modifier = Modifier
@@ -65,7 +63,7 @@ fun ConfigInputScreen(
             }
 
             Button(
-                onClick = { onSimulationStart(config.build()) }
+                onClick = { launchSimulation(config.build()) }
             ) {
                 Text("Uruchom Aplikację")
             }
