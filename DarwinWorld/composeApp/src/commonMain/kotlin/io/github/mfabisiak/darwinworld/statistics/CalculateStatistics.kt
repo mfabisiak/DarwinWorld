@@ -2,7 +2,7 @@ package io.github.mfabisiak.darwinworld.statistics
 
 import io.github.mfabisiak.darwinworld.logic.model.map.WorldMap
 
-fun CalculateStatistics(worldMap: WorldMap): SimulationStatistics {
+fun CalculateStatistics(worldMap: WorldMap, currentDay: Int): SimulationStatistics {
 
     val totalAnimals = worldMap.animals.size
 
@@ -17,14 +17,17 @@ fun CalculateStatistics(worldMap: WorldMap): SimulationStatistics {
 
     val averageEnergy = worldMap.animals.values
         .map { it.energy }
+        .ifEmpty { listOf(0) }
         .average()
 
     val averageAgeForDeadAnimals = worldMap.deadAnimals.values
         .map { it.age }
+        .ifEmpty { listOf(0) }
         .average()
 
     val averageNumberOfChildren = worldMap.animals.values
         .map { it.childrenIds.size }
+        .ifEmpty { listOf(0) }
         .average()
 
     val popularGenotypes = worldMap.animals.values
@@ -39,6 +42,7 @@ fun CalculateStatistics(worldMap: WorldMap): SimulationStatistics {
         }
 
     return SimulationStatistics(
+        currentDay,
         totalAnimals,
         totalPlants,
         freeAreas,
