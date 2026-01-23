@@ -9,7 +9,7 @@ import org.w3c.files.get
 import kotlin.js.ExperimentalWasmJsInterop
 
 @Composable
-actual fun rememberFileOpener(): FileLoader {
+actual fun rememberFileLoader(): FileLoader {
     return remember { WebFileOpener() }
 }
 
@@ -27,12 +27,12 @@ class WebFileOpener : FileLoader {
                 val reader = FileReader()
 
                 reader.onload = { event ->
-                    // )
                     val targetReader = event.target as FileReader
 
-                    val content = targetReader.result as String
+                    val content = targetReader.result?.toString()
 
-                    onFileRead(content)
+                    if (content != null)
+                        onFileRead(content)
                 }
 
                 reader.readAsText(file)

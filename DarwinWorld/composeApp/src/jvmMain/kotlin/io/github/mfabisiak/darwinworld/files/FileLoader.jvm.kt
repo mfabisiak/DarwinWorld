@@ -8,7 +8,7 @@ import java.io.File
 import java.io.FilenameFilter
 
 @Composable
-actual fun rememberFileOpener(): FileLoader {
+actual fun rememberFileLoader(): FileLoader {
     return remember { JvmFileOpener() }
 }
 

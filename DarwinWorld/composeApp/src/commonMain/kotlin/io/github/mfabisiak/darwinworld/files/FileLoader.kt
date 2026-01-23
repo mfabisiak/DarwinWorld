@@ -7,4 +7,4 @@ interface FileLoader {
 }
 
 @Composable
-expect fun rememberFileOpener(): FileLoader
+expect fun rememberFileLoader(): FileLoader
