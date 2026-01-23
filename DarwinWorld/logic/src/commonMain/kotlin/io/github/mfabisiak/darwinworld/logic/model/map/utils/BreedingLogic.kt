@@ -24,7 +24,7 @@ private fun Animals.breed(random: Random = Random) = this.values
     .fold(this) { currentAnimals, (parent1, parent2) ->
         val child = parent1.breed(parent2)
         currentAnimals
-            .update(parent1.breed(parent2))
+            .update(child)
             .update(parent1.afterBreeding(child.id))
             .update(parent2.afterBreeding(child.id))
     }
