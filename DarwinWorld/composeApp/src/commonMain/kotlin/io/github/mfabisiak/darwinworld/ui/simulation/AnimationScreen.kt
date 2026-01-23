@@ -25,23 +25,22 @@ fun AnimationScreen(config: SimulationConfig) {
 
     val stats = getDayStatistics(simulationState)
 
-    LaunchedEffect(Unit) {
-        viewModel.start()
-    }
-
-    DisposableEffect(Unit) {
-        onDispose {
-            viewModel.stop()
+    LaunchedEffect(isRunning) {
+        if (isRunning) {
+            viewModel.simulate()
         }
     }
 
+
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Row {
-            Button(enabled = !isRunning, onClick = { viewModel.previous() }) { Text("Poprzedni") }
-            Button(onClick = {
-                if (isRunning) viewModel.stop() else viewModel.start()
-                isRunning = !isRunning
-            }) {
+            Button(
+                enabled = !isRunning && viewModel.hasPreviousState(),
+                onClick = { viewModel.previous() }) {
+                Text("Poprzedni")
+            }
+
+            Button(onClick = { isRunning = !isRunning }) {
                 Text(if (isRunning) "STOP" else "START")
             }
             Button(enabled = !isRunning, onClick = { viewModel.next() }) { Text("Następny") }

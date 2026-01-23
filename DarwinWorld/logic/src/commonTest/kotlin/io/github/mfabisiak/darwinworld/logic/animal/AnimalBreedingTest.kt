@@ -18,7 +18,8 @@ data class TestConfig(
     override val minNumberOfMutations: Int = 0,
     override val maxNumberOfMutations: Int = 5,
     override val genotypeSize: Int = 5,
-    override val initialEnergy: Int = 5
+    override val initialEnergy: Int = 5,
+    override val random: Random = Random
 ) : AnimalConfig
 
 class AnimalBreedingTest {

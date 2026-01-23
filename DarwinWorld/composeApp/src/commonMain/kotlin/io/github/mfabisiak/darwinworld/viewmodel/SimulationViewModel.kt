@@ -14,15 +14,14 @@ class SimulationViewModel(config: SimulationConfig) : ViewModel() {
     val simulationState
         get() = simulation.state
 
-
-    private var simulationJob: Job? = null
-
     private val statisticsHistory = mutableListOf(getDayStatistics(simulationState.value))
 
     private fun nextDay() {
         simulation.simulateDay()
         statisticsHistory.add(getDayStatistics(simulationState.value))
     }
+
+    fun hasPreviousState() = statisticsHistory.size > 1
 
     fun previous() = viewModelScope.launch {
         simulation.undo()
@@ -33,18 +32,12 @@ class SimulationViewModel(config: SimulationConfig) : ViewModel() {
         nextDay()
     }
 
-    fun start() {
-        simulationJob = viewModelScope.launch(Dispatchers.Default) {
-            while (isActive) {
-                nextDay()
+    suspend fun simulate() = withContext(Dispatchers.Default) {
+        while (isActive) {
+            nextDay()
 
-                delay(500)
-            }
+            delay(500)
         }
-    }
-
-    fun stop() {
-        simulationJob?.cancel()
     }
 
     fun getStatisticsCsv() = (listOf(DayStatistics.CSV_HEADER) + statisticsHistory.map { it.toCsvRow() })
