@@ -4,33 +4,39 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.mfabisiak.darwinworld.logic.Simulation
 import io.github.mfabisiak.darwinworld.logic.config.SimulationConfig
-import io.github.mfabisiak.darwinworld.statistics.CalculateStatistics
-import io.github.mfabisiak.darwinworld.statistics.StatisticsSaver
+import io.github.mfabisiak.darwinworld.statistics.DayStatistics
+import io.github.mfabisiak.darwinworld.statistics.getDayStatistics
 import kotlinx.coroutines.*
 
-class SimulationViewModel(config: SimulationConfig, private val saver: StatisticsSaver) : ViewModel() {
+class SimulationViewModel(config: SimulationConfig) : ViewModel() {
     val simulation = Simulation(config)
 
     val simulationState
         get() = simulation.state
 
+
     private var simulationJob: Job? = null
+
+    private val statisticsHistory = mutableListOf(getDayStatistics(simulationState.value))
+
+    private fun nextDay() {
+        simulation.simulateDay()
+        statisticsHistory.add(getDayStatistics(simulationState.value))
+    }
 
     fun previous() = viewModelScope.launch {
         simulation.undo()
+        statisticsHistory.removeLast()
     }
 
     fun next() = viewModelScope.launch {
-        simulation.simulateDay()
+        nextDay()
     }
 
     fun start() {
         simulationJob = viewModelScope.launch(Dispatchers.Default) {
             while (isActive) {
-                simulation.simulateDay()
-
-                val currentStats = CalculateStatistics(simulationState.value)
-                saver.saveStats(currentStats)
+                nextDay()
 
                 delay(500)
             }
@@ -40,5 +46,9 @@ class SimulationViewModel(config: SimulationConfig, private val saver: Statistic
     fun stop() {
         simulationJob?.cancel()
     }
+
+    fun getStatisticsCsv() = (listOf(DayStatistics.CSV_HEADER) + statisticsHistory.map { it.toCsvRow() })
+        .fold(StringBuilder()) { builder, row -> builder.appendLine(row) }
+        .toString()
 
 }
