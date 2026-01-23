@@ -1,7 +1,5 @@
 package io.github.mfabisiak.darwinworld.logic.utils
 
-import kotlin.random.Random
-
 class CircularList<E>(val actualList: List<E>) : List<E> by actualList {
 
     init {
@@ -18,8 +16,6 @@ class CircularList<E>(val actualList: List<E>) : List<E> by actualList {
             currentIndex = (currentIndex + 1) % size
         }
     }
-
-    fun randomStartingInfiniteIterator() = infiniteIteratorFrom(Random.nextInt(size))
 
     fun infiniteIterator() = infiniteIteratorFrom(0)
 

@@ -26,28 +26,11 @@ class CircularListTest {
         }
     }
     @Test
-    fun shouldReturnElementsInCorrectOrderWithRandomStartIndex(){
-        // given
-        val list = CircularList(listOf(0, 1, 2, 3))
-
-        val pattern = listOf(0, 1, 2, 3, 0, 1, 2, 3).joinToString()
-
-        val result = list.randomStartingInfiniteIterator()
-            .asSequence()
-            .take(5)
-            .toList()
-            .joinToString()
-        // when + then
-        assertTrue(
-            pattern.contains(result)
-        )
-    }
-    @Test
     fun iteratorShouldAlwaysHaveNextElement(){
         // given
         val list = CircularList(listOf(0, 1, 2, 3, 4, 5))
 
-        val iterator = list.randomStartingInfiniteIterator()
+        val iterator = list.infiniteIterator()
         // when
         repeat(1000) {iterator.next()}
         // then
