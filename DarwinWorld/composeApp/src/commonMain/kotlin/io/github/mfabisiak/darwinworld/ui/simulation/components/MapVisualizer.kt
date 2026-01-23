@@ -1,4 +1,4 @@
-package io.github.mfabisiak.darwinworld.ui.components
+package io.github.mfabisiak.darwinworld.ui.simulation.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.BoxWithConstraints

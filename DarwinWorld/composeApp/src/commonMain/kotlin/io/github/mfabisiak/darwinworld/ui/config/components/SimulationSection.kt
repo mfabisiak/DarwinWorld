@@ -1,34 +1,35 @@
-package io.github.mfabisiak.darwinworld.ui.components
+package io.github.mfabisiak.darwinworld.ui.config.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import io.github.mfabisiak.darwinworld.config.ProductionConfig
+import io.github.mfabisiak.darwinworld.config.ConfigBuilder
 
 
 @Composable
-fun SimulationSection(config: ProductionConfig, onConfigChange: (ProductionConfig) -> Unit) {
-    Column(
-        modifier = Modifier
-
-    ) {
+fun SimulationSection(config: ConfigBuilder) {
+    Column(modifier = Modifier) {
         Text(
             "Symulacja",
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
         )
         ConfigInput("Liczba roślin:", config.numberOfPlants) {
-            onConfigChange(config.copy(numberOfPlants = it))
+            config.numberOfPlants = it
         }
 
         ConfigInput("Liczba roślin rosnących codziennie:", config.plantsGrowingEachDay) {
-            onConfigChange(config.copy(plantsGrowingEachDay = it))
+            config.plantsGrowingEachDay = it
         }
 
         ConfigInput("Liczba zwierząt:", config.numberOfAnimals) {
-            onConfigChange(config.copy(numberOfAnimals = it))
+            config.numberOfAnimals = it
+        }
+
+        ConfigInput("Seed losowania", config.randomSeed) {
+            config.randomSeed = it
         }
     }
 }
