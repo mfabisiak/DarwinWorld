@@ -29,6 +29,12 @@ fun AnimationScreen(config: SimulationConfig) {
         viewModel.start()
     }
 
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.stop()
+        }
+    }
+
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Row {
             Button(enabled = !isRunning, onClick = { viewModel.previous() }) { Text("Poprzedni") }
