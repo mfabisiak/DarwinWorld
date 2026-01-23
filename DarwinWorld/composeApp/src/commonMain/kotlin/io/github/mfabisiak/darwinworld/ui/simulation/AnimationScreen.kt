@@ -42,7 +42,12 @@ fun AnimationScreen(config: SimulationConfig) {
         }
         Row(modifier = Modifier.fillMaxSize()) {
             Box(modifier = Modifier.weight(1f)) {
-                MapVisualizer(simulationState.worldMap, config.upperBound.y + 1, config.upperBound.x + 1)
+                MapVisualizer(
+                    simulationState.worldMap,
+                    config.upperBound.y + 1,
+                    config.upperBound.x + 1,
+                    stats.topGenotype
+                )
             }
 
             Column(
