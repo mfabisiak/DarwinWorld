@@ -1,4 +1,4 @@
-package io.github.mfabisiak.darwinworld.ui.components
+package io.github.mfabisiak.darwinworld.ui.config.components
 
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -8,9 +8,10 @@ import androidx.compose.runtime.Composable
 fun ConfigInput(
     label: String,
     value: Int,
-    sendOnChange: (Int) -> Unit
+    isVisible: Boolean = true,
+    sendOnChange: (Int) -> Unit,
 ){
-    OutlinedTextField(
+    if (isVisible) OutlinedTextField(
         value = value.toString(),
         onValueChange = { text ->
             val digits = text.filter { it.isDigit() }
