@@ -5,47 +5,67 @@ import io.github.mfabisiak.darwinworld.logic.model.map.WorldMap
 import io.github.mfabisiak.darwinworld.logic.model.map.utils.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 
+private const val MAX_HISTORY_SIZE = 1000
 class Simulation(config: SimulationConfig) {
 
-    private val _worldMap: MutableStateFlow<WorldMap> = MutableStateFlow(WorldMap(config))
+    private val _state: MutableStateFlow<SimulationState> =
+        MutableStateFlow(SimulationState(WorldMap(config), 0))
 
-    private val _day: MutableStateFlow<Int> = MutableStateFlow(0)
+    val state
+        get() = _state.asStateFlow()
 
-    val worldMap
-        get() = _worldMap.asStateFlow()
+    private val currentMap
+        get() = _state.value.worldMap
 
-    val day
-        get() = _day.asStateFlow()
+    private val currentDay
+        get() = _state.value.day
+
+    private val history: ArrayDeque<SimulationState> = ArrayDeque()
+
+    private val poppedHistory: MutableList<SimulationState> = mutableListOf()
 
     init {
         val animalsPositions = config.boundary.random(config.numberOfAnimals)
 
-        val initialMap = _worldMap.value
+        val initialMap = currentMap
             .spawnPlants(config.numberOfPlants)
             .placeAnimals(animalsPositions)
 
-        updateMapState(initialMap)
+        updateState(initialMap, 0)
     }
 
-    private fun updateMapState(newWorldMap: WorldMap) {
-        _worldMap.update { newWorldMap }
+    private fun updateState(newWorldMap: WorldMap, day: Int = currentDay + 1) {
+        _state.value = SimulationState(newWorldMap, day)
     }
 
     fun simulateDay() {
-        val newMap = _worldMap.value
-            .removeDead()
-            .rotateAnimals()
-            .moveAnimals()
-            .eatPlants()
-            .breedAnimals()
-            .spawnPlants()
-            .endDay()
+        if (history.size >= MAX_HISTORY_SIZE) history.removeFirst()
 
-        updateMapState(newMap)
+        history.add(_state.value)
 
-        _day.value += 1
+        if (poppedHistory.isEmpty()) {
+            val newMap = currentMap
+                .removeDead()
+                .rotateAnimals()
+                .moveAnimals()
+                .eatPlants()
+                .breedAnimals()
+                .spawnPlants()
+                .endDay()
+            updateState(newMap)
+        } else {
+            _state.value = poppedHistory.removeLast()
+        }
+    }
+
+    fun undo() {
+        if (history.isNotEmpty()) {
+            poppedHistory.add(_state.value)
+            _state.value = history.removeLast()
+        }
     }
 
 }
+
+data class SimulationState(val worldMap: WorldMap, val day: Int)
