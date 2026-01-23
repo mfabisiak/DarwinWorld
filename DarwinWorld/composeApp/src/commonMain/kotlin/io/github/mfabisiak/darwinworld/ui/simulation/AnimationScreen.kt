@@ -1,10 +1,10 @@
-package io.github.mfabisiak.darwinworld.ui
+package io.github.mfabisiak.darwinworld.ui.simulation
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.*
 import io.github.mfabisiak.darwinworld.logic.Simulation
 import io.github.mfabisiak.darwinworld.logic.config.SimulationConfig
-import io.github.mfabisiak.darwinworld.ui.components.MapVisualizer
+import io.github.mfabisiak.darwinworld.ui.simulation.components.MapVisualizer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -15,7 +15,7 @@ fun AnimationScreen(config : SimulationConfig){
 
     val simulation = remember { Simulation(config)}
 
-    val currentMap by simulation.worldMap.collectAsState()
+    val currentState by simulation.state.collectAsState()
 
     LaunchedEffect(Unit){
         withContext(Dispatchers.Default) {
@@ -27,7 +27,7 @@ fun AnimationScreen(config : SimulationConfig){
     }
 
     Column {
-        MapVisualizer(currentMap, config.upperBound.y + 1, config.upperBound.x + 1)
+        MapVisualizer(currentState.worldMap, config.upperBound.y + 1, config.upperBound.x + 1)
     }
 
 }
