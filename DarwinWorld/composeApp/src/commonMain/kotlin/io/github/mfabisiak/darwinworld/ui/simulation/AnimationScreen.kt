@@ -6,13 +6,16 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import io.github.mfabisiak.darwinworld.logic.config.SimulationConfig
+import io.github.mfabisiak.darwinworld.statistics.createStatisticsSaver
 import io.github.mfabisiak.darwinworld.ui.simulation.components.MapVisualizer
 import io.github.mfabisiak.darwinworld.viewmodel.SimulationViewModel
 
 @Composable
-fun AnimationScreen(config : SimulationConfig){
+fun AnimationScreen(config: SimulationConfig) {
 
-    val viewModel = remember { SimulationViewModel(config) }
+    val saver = remember { createStatisticsSaver() }
+
+    val viewModel = remember { SimulationViewModel(config, saver) }
 
     var isRunning by remember { mutableStateOf(true) }
 

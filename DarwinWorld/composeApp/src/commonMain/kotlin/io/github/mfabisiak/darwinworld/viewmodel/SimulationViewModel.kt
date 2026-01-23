@@ -4,9 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.mfabisiak.darwinworld.logic.Simulation
 import io.github.mfabisiak.darwinworld.logic.config.SimulationConfig
+import io.github.mfabisiak.darwinworld.statistics.CalculateStatistics
+import io.github.mfabisiak.darwinworld.statistics.StatisticsSaver
 import kotlinx.coroutines.*
 
-class SimulationViewModel(config: SimulationConfig) : ViewModel() {
+class SimulationViewModel(config: SimulationConfig, private val saver: StatisticsSaver) : ViewModel() {
     val simulation = Simulation(config)
 
     val simulationState
@@ -26,6 +28,10 @@ class SimulationViewModel(config: SimulationConfig) : ViewModel() {
         simulationJob = viewModelScope.launch(Dispatchers.Default) {
             while (isActive) {
                 simulation.simulateDay()
+
+                val currentStats = CalculateStatistics(simulationState.value)
+                saver.saveStats(currentStats)
+
                 delay(500)
             }
         }

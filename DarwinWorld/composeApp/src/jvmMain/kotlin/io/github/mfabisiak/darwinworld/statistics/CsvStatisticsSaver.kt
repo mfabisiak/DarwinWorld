@@ -7,7 +7,7 @@ import java.util.*
 
 class CsvStatisticsSaver : StatisticsSaver {
 
-    @Suppress("SimpleDateFormat")
+
     private val fileName: String = "stats_${SimpleDateFormat("HH-mm-ss").format(Date())}.csv"
     private val file = File(fileName)
 

@@ -1,8 +1,12 @@
 package io.github.mfabisiak.darwinworld.statistics
 
-import io.github.mfabisiak.darwinworld.logic.model.map.WorldMap
+import io.github.mfabisiak.darwinworld.logic.SimulationState
 
-fun CalculateStatistics(worldMap: WorldMap, currentDay: Int): SimulationStatistics {
+fun CalculateStatistics(simulationState: SimulationState): SimulationStatistics {
+
+    val worldMap = simulationState.worldMap
+
+    val currentDay = simulationState.day
 
     val totalAnimals = worldMap.animals.size
 
