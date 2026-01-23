@@ -69,4 +69,25 @@ class ConfigBuilder {
         fastAnimalsEnabled = fastAnimalsEnabled
     )
 
+    fun fromSerializableConfig(config: SerializableConfig) {
+        numberOfPlants = config.numberOfPlants
+        plantsGrowingEachDay = config.plantsGrowingEachDay
+        numberOfAnimals = config.numberOfAnimals
+        energyConsumedEachDay = config.energyConsumedEachDay
+        energyRequiredToBreed = config.energyRequiredToBreed
+        energyGivenToNewborn = config.energyGivenToNewborn
+        minNumberOfMutations = config.minNumberOfMutations
+        maxNumberOfMutations = config.maxNumberOfMutations
+        genotypeSize = config.genotypeSize
+        mapWidth = config.mapWidth
+        mapHeight = config.mapHeight
+        energyFromSinglePlant = config.energyFromSinglePlant
+        initialEnergy = config.initialEnergy
+        randomSeed = config.randomSeed
+        energyRequiredToMoveFast = config.energyRequiredToMoveFast
+        energyPerExtraStep = config.energyPerExtraStep
+        maxRange = config.maxRange
+        fastAnimalsEnabled = config.fastAnimalsEnabled
+    }
+
 }

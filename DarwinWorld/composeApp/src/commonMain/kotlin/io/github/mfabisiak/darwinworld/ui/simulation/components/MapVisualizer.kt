@@ -15,22 +15,38 @@ import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import darwinworld.composeapp.generated.resources.*
+import io.github.mfabisiak.darwinworld.logic.model.animal.Animal
+import io.github.mfabisiak.darwinworld.logic.model.animal.Genotype
 import io.github.mfabisiak.darwinworld.logic.model.map.WorldMap
 import org.jetbrains.compose.resources.painterResource
+import kotlin.math.max
+import kotlin.math.min
+
 
 @Composable
-fun MapVisualizer(worldMap: WorldMap, height: Int, width: Int) {
+fun MapVisualizer(worldMap: WorldMap, height: Int, width: Int, topGenotype: Genotype? = null) {
+
+    fun calculateColor(animal: Animal): Color = with(worldMap.config) {
+        when {
+            animal.energy > 8 * energyConsumedEachDay -> Color.hsl(120f, 0.65f, 0.25f)
+            animal.energy > 6 * energyConsumedEachDay -> Color.Green
+            animal.energy > 4 * energyConsumedEachDay -> Color.hsl(45f, 0.8f, 0.4f)
+            animal.energy > 2 * energyConsumedEachDay -> Color.hsl(55f, 0.9f, 0.65f)
+            else -> Color.Red
+        }
+    }
 
     val animalDrawables = listOf(
-            painterResource(Res.drawable.animal_0),
-            painterResource(Res.drawable.animal_45),
-            painterResource(Res.drawable.animal_90),
-            painterResource(Res.drawable.animal_135),
-            painterResource(Res.drawable.animal_180),
-            painterResource(Res.drawable.animal_225),
-            painterResource(Res.drawable.animal_270),
-            painterResource(Res.drawable.animal_315)
-        )
+        painterResource(Res.drawable.animal_0),
+        painterResource(Res.drawable.animal_45),
+        painterResource(Res.drawable.animal_90),
+        painterResource(Res.drawable.animal_135),
+        painterResource(Res.drawable.animal_180),
+        painterResource(Res.drawable.animal_225),
+        painterResource(Res.drawable.animal_270),
+        painterResource(Res.drawable.animal_315)
+    )
+    val plantDrawable = painterResource(Res.drawable.plant)
 
     BoxWithConstraints(
         modifier = Modifier
@@ -79,17 +95,30 @@ fun MapVisualizer(worldMap: WorldMap, height: Int, width: Int) {
             }
 
             for (plantPos in worldMap.plants) {
-                drawRect(
-                    color = Color.Green,
-                    topLeft = Offset(plantPos.x * cellWidthPx, plantPos.y * cellHeightPx),
-                    size = cellSizePx
-                )
+
+                val plantSizePx = cellSizePx * 0.65f
+
+                val x = plantPos.x * cellWidthPx
+                val y = plantPos.y * cellHeightPx
+
+                translate(left = x + (cellWidthPx * (1 - 0.8f)), top = y + (cellHeightPx * (1 - 0.8f))) {
+                    with(plantDrawable) {
+                        draw(size = plantSizePx)
+                    }
+                }
             }
 
             for (animal in worldMap.animals.values) {
                 val x = animal.position.x * cellWidthPx
                 val y = animal.position.y * cellHeightPx
 
+                if (animal.genotype.genes.actualList == topGenotype?.genes?.actualList) {
+                    drawRect(
+                        color = Color.Yellow.copy(alpha = 0.5f),
+                        topLeft = Offset(x, y),
+                        size = cellSizePx
+                    )
+                }
                 val painterIndex = animal.direction.ordinal % animalDrawables.size
                 val currentPainter = animalDrawables[painterIndex]
 
@@ -98,6 +127,19 @@ fun MapVisualizer(worldMap: WorldMap, height: Int, width: Int) {
                         draw(size = Size(cellWidthPx, cellHeightPx))
                     }
                 }
+                val color = calculateColor(animal)
+                val maxLength = 0.8f
+                val length =
+                    min(
+                        max((animal.energy.toFloat() / (8f * worldMap.config.energyConsumedEachDay)) * maxLength, 0.1f),
+                        maxLength
+                    )
+
+                drawRect(
+                    color = color,
+                    topLeft = Offset(x + cellWidthPx * 0.125f, y + cellHeightPx * 0.05f),
+                    size = Size(cellWidthPx * length, cellHeightPx * 0.15f)
+                )
             }
         }
     }

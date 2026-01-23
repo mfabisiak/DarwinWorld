@@ -11,19 +11,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.mfabisiak.darwinworld.config.ConfigBuilder
+import io.github.mfabisiak.darwinworld.config.SerializableConfig
+import io.github.mfabisiak.darwinworld.files.rememberFileLoader
+import io.github.mfabisiak.darwinworld.files.rememberFileSaver
 import io.github.mfabisiak.darwinworld.ui.config.components.AnimalSection
 import io.github.mfabisiak.darwinworld.ui.config.components.MapSection
 import io.github.mfabisiak.darwinworld.ui.config.components.SimulationSection
 import io.github.mfabisiak.darwinworld.ui.utils.launchSimulation
+import kotlinx.serialization.json.Json
 
 @Composable
 fun ConfigInputScreen() {
     val config = remember { ConfigBuilder() }
+    val fileSaver = rememberFileSaver()
+    val fileLoader = rememberFileLoader()
 
-    BoxWithConstraints(modifier = Modifier
-        .fillMaxSize()
-        .padding(horizontal = 32.dp, vertical = 16.dp),
-        ){
+    BoxWithConstraints(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 32.dp, vertical = 16.dp),
+    ) {
         val isWideScreen = this.maxWidth > 750.dp
 
         Column(
@@ -36,7 +43,7 @@ fun ConfigInputScreen() {
                 if (isWideScreen) {
                     Row(
                         modifier = Modifier
-                            .fillMaxWidth()
+                            .fillMaxSize()
                             .verticalScroll(rememberScrollState()),
 
                         ) {
@@ -61,11 +68,36 @@ fun ConfigInputScreen() {
                 }
 
             }
+            FlowRow(modifier = Modifier.padding(10.dp)) {
+                Button(
+                    onClick = { launchSimulation(config) }
+                ) {
+                    Text("Uruchom Aplikację")
+                }
 
-            Button(
-                onClick = { launchSimulation(config) }
-            ) {
-                Text("Uruchom Aplikację")
+                Button(onClick = {
+                    fileSaver.save(
+                        "Config", "json",
+                        Json.encodeToString(config.toSerializableConfig())
+                    )
+                }) {
+                    Text("Zapisz konfigurację")
+                }
+
+                Button(onClick = {
+                    fileLoader.openFile("json") {
+                        val loadedConfig = try {
+                            Json.decodeFromString<SerializableConfig>(it)
+                        } catch (_: Exception) {
+                            return@openFile
+                        }
+
+                        config.fromSerializableConfig(loadedConfig)
+                    }
+                }) {
+                    Text("Wczytaj konfigurację")
+                }
+
             }
         }
     }
