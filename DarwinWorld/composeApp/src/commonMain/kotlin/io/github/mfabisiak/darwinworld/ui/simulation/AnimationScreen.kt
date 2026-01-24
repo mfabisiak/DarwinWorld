@@ -25,6 +25,10 @@ fun AnimationScreen(config: SimulationConfig) {
 
     val stats = CalculateStatistics(simulationState)
 
+    val selectedId = viewModel.selectedAnimalId
+
+    val trackedAnimal = simulationState.worldMap.animals[selectedId] ?: simulationState.worldMap.deadAnimals[selectedId]
+
     LaunchedEffect(Unit) {
         viewModel.start()
     }
@@ -46,7 +50,10 @@ fun AnimationScreen(config: SimulationConfig) {
                     simulationState.worldMap,
                     config.upperBound.y + 1,
                     config.upperBound.x + 1,
-                    stats.topGenotype
+                    stats.topGenotype,
+                    selectedId,
+                    onAnimalClick = { clickedId -> viewModel.toggleAnimalSelection(clickedId) }
+
                 )
             }
 
@@ -62,6 +69,21 @@ fun AnimationScreen(config: SimulationConfig) {
                 Text("Średnia długość życia: ${stats.age}")
                 Text("Średnia ilość Dzieci: ${stats.children}")
                 Text("Genotypy: ${stats.popularGenotypes}")
+
+                if (trackedAnimal != null) {
+                    Text("Informacje o obserwowanym zwierzaku")
+                    Text("Status ${if (trackedAnimal.energy > 0) "Żywy" else "Martwy"}")
+                    val genotype = trackedAnimal.genotype.genes.actualList.joinToString(" ")
+                    Text("Genom [$genotype]")
+                    Text("Energia: ${trackedAnimal.energy}")
+                    Text("Zjedzone rośliny: ${trackedAnimal.eatenPlants}")
+                    Text("Dzieci: ${trackedAnimal.childrenIds.size}")
+                    if (trackedAnimal.energy > 0) {
+                        Text("Wiek: ${trackedAnimal.age}")
+                    } else {
+                        Text("Zmarł w dniu: ${trackedAnimal.birthDay}")
+                    }
+                }
             }
         }
     }
