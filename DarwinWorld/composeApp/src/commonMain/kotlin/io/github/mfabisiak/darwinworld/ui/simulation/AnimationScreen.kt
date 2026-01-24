@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import io.github.mfabisiak.darwinworld.files.rememberFileSaver
 import io.github.mfabisiak.darwinworld.logic.config.SimulationConfig
 import io.github.mfabisiak.darwinworld.statistics.getDayStatistics
+import io.github.mfabisiak.darwinworld.ui.simulation.components.AnimalStatistics
 import io.github.mfabisiak.darwinworld.ui.simulation.components.MapVisualizer
 import io.github.mfabisiak.darwinworld.ui.simulation.components.StatisticsContent
 import io.github.mfabisiak.darwinworld.viewmodel.SimulationViewModel
@@ -80,6 +81,8 @@ fun AnimationScreen(config: SimulationConfig) {
                         verticalArrangement = Arrangement.Center
                     ) {
                         StatisticsContent(stats, config, fileSaver, viewModel)
+                        AnimalStatistics(simulationState.worldMap, trackedAnimal)
+
                     }
                 }
             } else {
@@ -92,7 +95,10 @@ fun AnimationScreen(config: SimulationConfig) {
                         MapVisualizer(
                             simulationState.worldMap,
                             config.upperBound.y + 1,
-                            config.upperBound.x + 1
+                            config.upperBound.x + 1,
+                            stats.topGenotype,
+                            selectedId,
+                            onAnimalClick = { clickedId -> viewModel.toggleAnimalSelection(clickedId) }
                         )
                     }
 
@@ -102,30 +108,7 @@ fun AnimationScreen(config: SimulationConfig) {
                             .padding(start = 16.dp)
                     ) {
                         StatisticsContent(stats, config, fileSaver, viewModel)
-
-                        Text("Dzień: ${stats.currentDay}")
-                        Text("Zwierzaki: ${stats.totalAnimals}")
-                        Text("Rośliny: ${stats.totalPlants}")
-                        Text("Wolne pola: ${stats.freeAreas}")
-                        Text("Średnia Energia: ${stats.energy}")
-                        Text("Średnia długość życia: ${stats.age}")
-                        Text("Średnia ilość Dzieci: ${stats.children}")
-                        Text("Genotypy: ${stats.popularGenotypes}")
-
-                        if (trackedAnimal != null) {
-                            Text("Informacje o obserwowanym zwierzaku")
-                            Text("Status ${if (trackedAnimal.energy > 0) "Żywy" else "Martwy"}")
-                            val genotype = trackedAnimal.genotype.genes.actualList.joinToString(" ")
-                            Text("Genom [$genotype]")
-                            Text("Energia: ${trackedAnimal.energy}")
-                            Text("Zjedzone rośliny: ${trackedAnimal.eatenPlants}")
-                            Text("Dzieci: ${trackedAnimal.childrenIds.size}")
-                            if (trackedAnimal.energy > 0) {
-                                Text("Wiek: ${trackedAnimal.age}")
-                            } else {
-                                Text("Zmarł w dniu: ${trackedAnimal.birthDay}")
-                            }
-                        }
+                        AnimalStatistics(simulationState.worldMap, trackedAnimal)
                     }
                 }
             }
@@ -133,5 +116,7 @@ fun AnimationScreen(config: SimulationConfig) {
     }
 
 }
+
+
 
 

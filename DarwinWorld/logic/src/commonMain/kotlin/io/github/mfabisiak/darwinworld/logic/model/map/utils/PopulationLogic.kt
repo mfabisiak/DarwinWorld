@@ -34,3 +34,33 @@ internal fun WorldMap.placeAnimals(positions: Collection<Position>): WorldMap {
 
     return this.copy(animals = newAnimals)
 }
+
+fun WorldMap.numberOfDescendants(
+    animalId: String,
+): Int {
+    val visited = HashSet<String>()
+
+    val queue = ArrayDeque<String>()
+
+    val startAnimal = animals[animalId] ?: deadAnimals[animalId] ?: return 0
+
+    for (childId in startAnimal.childrenIds) {
+        queue.add(childId)
+        visited.add(childId)
+    }
+
+    while (!queue.isEmpty()) {
+        val currentId = queue.removeFirst()
+        val currentAnimal = animals[currentId] ?: deadAnimals[currentId]
+
+        if (currentAnimal != null) {
+            for (childId in currentAnimal.childrenIds) {
+                if (visited.add(childId)) {
+                    queue.addLast(childId)
+                }
+            }
+        }
+    }
+
+    return visited.size
+}
