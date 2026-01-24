@@ -1,11 +1,8 @@
-package io.github.mfabisiak.darwinworld.logic.animal
+package io.github.mfabisiak.darwinworld.logic.model.animal
 
 import io.github.mfabisiak.darwinworld.logic.config.AnimalConfig
 import io.github.mfabisiak.darwinworld.logic.model.Direction
 import io.github.mfabisiak.darwinworld.logic.model.Position
-import io.github.mfabisiak.darwinworld.logic.model.animal.Animal
-import io.github.mfabisiak.darwinworld.logic.model.animal.Genotype
-import io.github.mfabisiak.darwinworld.logic.model.animal.breed
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
