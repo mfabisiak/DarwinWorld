@@ -30,6 +30,10 @@ fun AnimationScreen(config: SimulationConfig) {
 
 
 
+    val selectedId = viewModel.selectedAnimalId
+
+    val trackedAnimal = simulationState.worldMap.animals[selectedId] ?: simulationState.worldMap.deadAnimals[selectedId]
+
     LaunchedEffect(isRunning) {
         if (isRunning) {
             viewModel.simulate()
@@ -59,7 +63,11 @@ fun AnimationScreen(config: SimulationConfig) {
                         MapVisualizer(
                             simulationState.worldMap,
                             config.upperBound.y + 1,
-                            config.upperBound.x + 1
+                            config.upperBound.x + 1,
+                            stats.topGenotype,
+                            selectedId,
+                            onAnimalClick = { clickedId -> viewModel.toggleAnimalSelection(clickedId) }
+
                         )
                     }
 
@@ -94,6 +102,30 @@ fun AnimationScreen(config: SimulationConfig) {
                             .padding(start = 16.dp)
                     ) {
                         StatisticsContent(stats, config, fileSaver, viewModel)
+
+                        Text("Dzień: ${stats.currentDay}")
+                        Text("Zwierzaki: ${stats.totalAnimals}")
+                        Text("Rośliny: ${stats.totalPlants}")
+                        Text("Wolne pola: ${stats.freeAreas}")
+                        Text("Średnia Energia: ${stats.energy}")
+                        Text("Średnia długość życia: ${stats.age}")
+                        Text("Średnia ilość Dzieci: ${stats.children}")
+                        Text("Genotypy: ${stats.popularGenotypes}")
+
+                        if (trackedAnimal != null) {
+                            Text("Informacje o obserwowanym zwierzaku")
+                            Text("Status ${if (trackedAnimal.energy > 0) "Żywy" else "Martwy"}")
+                            val genotype = trackedAnimal.genotype.genes.actualList.joinToString(" ")
+                            Text("Genom [$genotype]")
+                            Text("Energia: ${trackedAnimal.energy}")
+                            Text("Zjedzone rośliny: ${trackedAnimal.eatenPlants}")
+                            Text("Dzieci: ${trackedAnimal.childrenIds.size}")
+                            if (trackedAnimal.energy > 0) {
+                                Text("Wiek: ${trackedAnimal.age}")
+                            } else {
+                                Text("Zmarł w dniu: ${trackedAnimal.birthDay}")
+                            }
+                        }
                     }
                 }
             }

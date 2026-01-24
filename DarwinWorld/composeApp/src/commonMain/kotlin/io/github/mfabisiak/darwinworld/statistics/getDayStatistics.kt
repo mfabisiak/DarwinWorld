@@ -35,13 +35,13 @@ fun getDayStatistics(simulationState: SimulationState): DayStatistics {
         .average()
 
     val popularGenotypes = worldMap.animals.values
-        .groupingBy { it.genotype }
+        .groupingBy { it.genotype.genes.actualList }
         .eachCount()
         .entries
         .sortedByDescending { it.value }
         .take(3)
         .joinToString(", ") { x ->
-            val genesString = x.key.genes.joinToString(" ")
+            val genesString = x.key.joinToString(" ")
             "[$genesString] (${x.value})"
         }
     val topGenes = worldMap.animals.values

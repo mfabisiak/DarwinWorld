@@ -1,5 +1,8 @@
 package io.github.mfabisiak.darwinworld.viewmodel
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.mfabisiak.darwinworld.logic.Simulation
@@ -22,6 +25,13 @@ class SimulationViewModel(config: SimulationConfig) : ViewModel() {
     }
 
     fun hasPreviousState() = statisticsHistory.size > 1
+
+    var selectedAnimalId by mutableStateOf<String?>(null)
+        private set
+
+    fun toggleAnimalSelection(id: String?) {
+        selectedAnimalId = if (selectedAnimalId == id) null else id
+    }
 
     fun previous() = viewModelScope.launch {
         simulation.undo()

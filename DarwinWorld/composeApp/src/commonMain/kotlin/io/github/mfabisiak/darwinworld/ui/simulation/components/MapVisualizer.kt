@@ -1,6 +1,7 @@
 package io.github.mfabisiak.darwinworld.ui.simulation.components
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -11,7 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import darwinworld.composeapp.generated.resources.*
@@ -24,7 +27,14 @@ import kotlin.math.min
 
 
 @Composable
-fun MapVisualizer(worldMap: WorldMap, height: Int, width: Int, topGenotype: Genotype? = null) {
+fun MapVisualizer(
+    worldMap: WorldMap,
+    height: Int,
+    width: Int,
+    topGenotype: Genotype? = null,
+    selectedAnimalId: String? = null,
+    onAnimalClick: (String?) -> Unit
+) {
 
     fun calculateColor(animal: Animal): Color = with(worldMap.config) {
         when {
@@ -58,7 +68,27 @@ fun MapVisualizer(worldMap: WorldMap, height: Int, width: Int, topGenotype: Geno
         val canvasWidth = cellSizeDp * width
         val canvasHeight = cellSizeDp * height
 
-        Canvas(modifier = Modifier.size(canvasWidth, canvasHeight)) {
+        Canvas(
+            modifier = Modifier
+                .size(canvasWidth, canvasHeight)
+                .pointerInput(worldMap) {
+                    detectTapGestures { offset ->
+                        val cellWidth = size.width / width
+                        val cellHeight = size.height / height
+                        val x = (offset.x / cellWidth).toInt()
+
+                        val yFromTop = (offset.y / cellHeight).toInt()
+
+                        val y = height - 1 - yFromTop
+
+                        val animal = worldMap.animals.values.find {
+                            it.position.x == x && it.position.y == y
+                        }
+                        onAnimalClick(animal?.id)
+                    }
+                }
+        ) {
+
             val cellWidthPx = size.width / width
             val cellHeightPx = size.height / height
             val cellSizePx = Size(cellWidthPx, cellHeightPx)
@@ -99,7 +129,7 @@ fun MapVisualizer(worldMap: WorldMap, height: Int, width: Int, topGenotype: Geno
                 val plantSizePx = cellSizePx * 0.65f
 
                 val x = plantPos.x * cellWidthPx
-                val y = plantPos.y * cellHeightPx
+                val y = (height - 1 - plantPos.y) * cellHeightPx
 
                 translate(left = x + (cellWidthPx * (1 - 0.8f)), top = y + (cellHeightPx * (1 - 0.8f))) {
                     with(plantDrawable) {
@@ -110,13 +140,22 @@ fun MapVisualizer(worldMap: WorldMap, height: Int, width: Int, topGenotype: Geno
 
             for (animal in worldMap.animals.values) {
                 val x = animal.position.x * cellWidthPx
-                val y = animal.position.y * cellHeightPx
+                val y = (height - 1 - animal.position.y) * cellHeightPx
 
                 if (animal.genotype.genes.actualList == topGenotype?.genes?.actualList) {
                     drawRect(
                         color = Color.Yellow.copy(alpha = 0.5f),
                         topLeft = Offset(x, y),
                         size = cellSizePx
+                    )
+                }
+
+                if (animal.id == selectedAnimalId) {
+                    drawCircle(
+                        color = Color.Red,
+                        radius = (min(cellWidthPx, cellHeightPx) / 2) * 1.3f,
+                        center = Offset(x + cellWidthPx / 2, y + cellHeightPx / 2),
+                        style = Stroke(width = 4f)
                     )
                 }
                 val painterIndex = animal.direction.ordinal % animalDrawables.size
