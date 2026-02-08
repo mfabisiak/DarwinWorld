@@ -65,3 +65,6 @@ internal fun Animal.afterBreeding(childId: String): Animal {
     )
 }
 
+internal val ANIMAL_COMPARATOR = compareByDescending<Animal> { it.energy }
+    .thenByDescending { it.age }
+    .thenByDescending { it.childrenIds.size }

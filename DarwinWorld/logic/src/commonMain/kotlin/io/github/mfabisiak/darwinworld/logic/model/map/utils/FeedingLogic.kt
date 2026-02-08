@@ -1,5 +1,6 @@
 package io.github.mfabisiak.darwinworld.logic.model.map.utils
 
+import io.github.mfabisiak.darwinworld.logic.model.animal.ANIMAL_COMPARATOR
 import io.github.mfabisiak.darwinworld.logic.model.animal.Animal
 import io.github.mfabisiak.darwinworld.logic.model.map.WorldMap
 
@@ -20,9 +21,7 @@ private fun WorldMap.eatPlant(animalsAtPosition: Collection<Animal>): WorldMap {
 
     val animal = animalsAtPosition
         .shuffled(config.random)
-        .maxWith(compareBy<Animal> { it.energy }
-            .thenBy { it.age }
-            .thenBy { it.childrenIds.size })
+        .maxWith(ANIMAL_COMPARATOR)
 
 
     val newAnimals =

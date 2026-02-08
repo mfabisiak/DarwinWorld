@@ -15,8 +15,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            // Pobieramy aktualny stan z naszego singletona
-            // Dzięki 'by' Compose automatycznie odświeży widok przy zmianie
             val activeSimulation = SimulationNavigation.currentConfig
 
             if (activeSimulation != null) {
