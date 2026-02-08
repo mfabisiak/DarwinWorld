@@ -10,7 +10,7 @@ private fun randomPlantPosition(
     availableSteppePositions: MutableSet<Position>,
     random: Random = Random
 ): Position? {
-    val inJungle = Random.nextDouble() < 0.8
+    val inJungle = random.nextDouble() < 0.8
 
     val chosenPosition = if (inJungle) {
         availableJunglePositions.randomOrNull(random) ?: availableSteppePositions.randomOrNull(random)
