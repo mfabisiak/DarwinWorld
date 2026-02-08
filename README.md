@@ -38,5 +38,5 @@ Podczas szybkiego ruchu może dojść do kolizji z innym zwierzakiem. Jeśli na 
 2.  Agresor traci podwójnie energię.
 3.  W naszej symulacji przyjęliśmy model ruchu w którym wszystkie zwierzaki zaczynają ruch jednocześnie ( brak aktualizacji occupiedPositions po ruchu każdego zwierzaka ). Do kolizji brana jest pod uwagę ich pozycja przed ruchem. Eliminuje to problem ustalenia kolejności, w której miałyby się poruszać zwierzaki, gdyby było to sekwencyjnie.
 
-* **Dostępna online:** [Uruchom symulację w przeglądarce](https://mfabisiak.github.io/PO_2025_PT1315_Fabisiak_Bednarczyk/wasmJs/productionExecutable/)
+* **Dostępna online:** [Uruchom symulację w przeglądarce](https://mfabisiak.github.io/DarwinWorld/wasmJs/productionExecutable/)
 
